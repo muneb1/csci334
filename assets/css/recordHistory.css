@@ -1,0 +1,89 @@
+#requestHistory {
+  padding-top: 120px; }
+
+#record_table button {
+  font-size: 12px;
+  padding: .25rem .75rem; }
+
+.conversation {
+  padding-right: 15px !important;
+  min-height: 80vh;
+  padding-top: 30px;
+  position: relative;
+  padding-bottom: 206px; }
+  .conversation hr {
+    border: 1px black solid; }
+
+.progressDiv {
+  padding-top: 20px;
+  padding-right: 0;
+  padding-left: 15px !important; }
+  .progressDiv > div {
+    background-color: #dfe6e9;
+    padding: 20px;
+    border-radius: 5px;
+    height: 100%; }
+    .progressDiv > div > b {
+      margin-bottom: 15px;
+      display: inline-block; }
+    .progressDiv > div > span {
+      font-size: 12px;
+      display: inline-block; }
+    .progressDiv > div textarea {
+      width: 100%; }
+  .progressDiv .stars {
+    width: 90%;
+    height: 30px;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0px 15px; }
+    .progressDiv .stars div {
+      width: 30px;
+      height: 30px;
+      background: url(http://localhost/csci334/assets/img/star_.png) no-repeat center 0px; }
+  .progressDiv .progressList {
+    font-size: 14px;
+    list-style: none;
+    padding-left: 0px;
+    margin-bottom: 30px; }
+    .progressDiv .progressList li {
+      padding-left: 30px;
+      padding-bottom: 15px;
+      position: relative;
+      background: url(http://localhost/csci334/assets/img/uncheck.png) no-repeat left 0px; }
+      .progressDiv .progressList li.checked {
+        background: url(http://localhost/csci334/assets/img/check.png) no-repeat left 0px; }
+      .progressDiv .progressList li span {
+        display: block; }
+        .progressDiv .progressList li span.time {
+          font-size: 12px; }
+      .progressDiv .progressList li:before {
+        content: "";
+        position: absolute;
+        background-color: white;
+        width: 2px;
+        left: 9px;
+        height: 100%;
+        top: 15px; }
+      .progressDiv .progressList li:last-child:before {
+        height: 0; }
+
+.replyDiv {
+  margin-top: 20px;
+  position: absolute;
+  bottom: 0;
+  width: 100%; }
+  .replyDiv textarea {
+    width: 100%;
+    resize: none;
+    padding: 10px;
+    margin-top: 7px; }
+
+.conDiv div {
+  margin-top: 20px; }
+  .conDiv div .title {
+    font-weight: bold;
+    display: block; }
+
+/*# sourceMappingURL=recordHistory.css.map */

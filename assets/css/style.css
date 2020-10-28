@@ -26,6 +26,33 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "Raleway", sans-serif;
 }
 
+.blue{
+  background-color: #2487ce !important;
+}
+
+.btn-main{
+    color: #fff;
+    background-color: #2487ce;
+    border-color: #2487ce;
+}
+
+.btn-main:hover{
+    color: #fff;
+    background-color: #005b9d;
+    border-color: #005b9d;
+}
+
+.btn-outline-main{
+    color: #2487ce;
+    background-color: transparent;
+    border: #2487ce 2px solid;
+}
+
+.btn-outline-main:hover{
+    color: #fff;
+    background-color: #2487ce;
+}
+
 /*--------------------------------------------------------------
 # Back to top button
 --------------------------------------------------------------*/
@@ -109,6 +136,19 @@ h1, h2, h3, h4, h5, h6 {
   [data-aos-delay] {
     transition-delay: 0 !important;
   }
+}
+
+/*--------------------------------------------------------------
+# Alert DIV
+--------------------------------------------------------------*/
+
+#alert-div{
+  width: 99%;
+  z-index: 1100;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /*--------------------------------------------------------------
@@ -210,6 +250,10 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
 }
 
+.nav-menu .drop-down li.logout a:hover {
+  color: #721c24 !important;
+}
+
 .nav-menu .drop-down ul a {
   padding: 10px 20px;
   font-size: 14px;
@@ -261,6 +305,31 @@ h1, h2, h3, h4, h5, h6 {
     content: "\ea9d";
   }
 }
+
+.login-btn{
+  font-family: "Raleway", sans-serif;
+  background-color: transparent;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 1px;
+  display: inline-block;
+  padding: 5px 15px;
+  margin: 10px 0 10px 28px;
+  border-radius: 5px;
+  transition: 0.3s;
+  line-height: 1;
+  color: #2487ce;
+  -webkit-animation-delay: 0.8s;
+  animation-delay: 0.8s;
+  border: 1.2px solid #2487ce;
+}
+
+.login-btn:hover {
+  background: #2487ce;
+  color: #fff;
+  text-decoration: none;
+}
+
 
 /* Get Startet Button */
 .get-started-btn {
@@ -1934,3 +2003,96 @@ section {
   color: #fff;
   text-decoration: none;
 }
+
+/*--------------------------------------------------------------
+# request history
+--------------------------------------------------------------*/
+
+#requestHistory {
+  padding-top: 120px; }
+
+#record_table button {
+  font-size: 12px;
+  padding: .25rem .75rem; }
+
+.conversation {
+  padding-right: 15px !important;
+  min-height: 80vh;
+  padding-top: 30px;
+  position: relative;
+  padding-bottom: 206px; }
+  .conversation hr {
+    border: 1px black solid; }
+
+.progressDiv {
+  padding-top: 20px;
+  padding-right: 0;
+  padding-left: 15px !important; }
+  .progressDiv > div {
+    background-color: #dfe6e9;
+    padding: 20px;
+    border-radius: 5px;
+    height: 100%; }
+    .progressDiv > div > b {
+      margin-bottom: 15px;
+      display: inline-block; }
+    .progressDiv > div > span {
+      font-size: 12px;
+      display: inline-block; }
+    .progressDiv > div textarea {
+      width: 100%; }
+  .progressDiv .stars {
+    width: 90%;
+    height: 30px;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0px 15px; }
+    .progressDiv .stars div {
+      width: 30px;
+      height: 30px;
+      background: url(http://localhost/csci334/assets/img/star_.png) no-repeat center 0px; }
+  .progressDiv .progressList {
+    font-size: 14px;
+    list-style: none;
+    padding-left: 0px;
+    margin-bottom: 30px; }
+    .progressDiv .progressList li {
+      padding-left: 30px;
+      padding-bottom: 15px;
+      position: relative;
+      background: url(http://localhost/csci334/assets/img/uncheck.png) no-repeat left 0px; }
+      .progressDiv .progressList li.checked {
+        background: url(http://localhost/csci334/assets/img/check.png) no-repeat left 0px; }
+      .progressDiv .progressList li span {
+        display: block; }
+        .progressDiv .progressList li span.time {
+          font-size: 12px; }
+      .progressDiv .progressList li:before {
+        content: "";
+        position: absolute;
+        background-color: white;
+        width: 2px;
+        left: 9px;
+        height: 100%;
+        top: 15px; }
+      .progressDiv .progressList li:last-child:before {
+        height: 0; }
+
+.replyDiv {
+  margin-top: 20px;
+  position: absolute;
+  bottom: 0;
+  width: 100%; }
+  .replyDiv textarea {
+    width: 100%;
+    resize: none;
+    padding: 10px;
+    margin-top: 7px; }
+
+.conDiv div {
+  margin-top: 20px; }
+  .conDiv div .title {
+    font-weight: bold;
+    display: block; }
+

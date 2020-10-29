@@ -4,13 +4,19 @@ define("ROOT_PATH", "csci334/", FALSE);
 require "menu.php";
 require "config.php";
 
-//This is a Singleton class
+// This is a class without implementing Singleton Pattern
+// This is root class from the whole program, is like the engine from the program, the program stucture and core stored here
+// This class is 80% completed
 class ADTECH{
 	private static $instance = null;
 	private static $mysqli;
 	private static $mainMenu;
+	private static $notifier;
 
 	private function __construct() {
+
+		//initialize variable
+		self::$mainMenu = array();
 
 		//create db connection
 		mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
@@ -20,24 +26,16 @@ class ADTECH{
 		} catch(Exception $e) {
 			error_log($e->getMessage());
 			exit('Error connecting to database'); //Should be a message a typical user could understand
-		}
+		}	
+	}
 
-		//initialize menu
-		$dashboard = new Main_Menu("Dashboard",ROOT_PATH);
-		$customerMenu = new Main_Menu("Customer Requests",ROOT_PATH."customers");
-		$staffMenu = new Main_Menu("Staff", ROOT_PATH."staffs");
+	public function addMenu($menu){
+		if (self::$instance == null)
+	    {
+	      self::$instance = new ADTECH();
+	    }
 
-		$newCus = new Sub_Menu("New Requests", ROOT_PATH."customers?f=new");
-		$ongoingCus = new Sub_Menu("On-Going Requests", ROOT_PATH."customers?f=ongoing");
-		$comCus = new Sub_Menu("Completed Requests", ROOT_PATH."customers?f=completed");
-		$customerMenu->addSubMenu($newCus);
-		$customerMenu->addSubMenu($ongoingCus);
-		$customerMenu->addSubMenu($comCus);
-
-		self::$mainMenu = array();
-		array_push(self::$mainMenu, $dashboard );
-		array_push(self::$mainMenu, $customerMenu );
-		array_push(self::$mainMenu, $staffMenu );
+		array_push(self::$mainMenu, $menu);
 	}
 
 	public static function getMenu(){
@@ -61,6 +59,15 @@ class ADTECH{
 	    }
 
 		return self::$mysqli;
+	}
+
+	public static function getNotifier(){
+		if (self::$instance == null)
+	    {
+	      self::$instance = new ADTECH();
+	    }
+
+		return self::$notifier;
 	}
 
 	public static function getInstance()

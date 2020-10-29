@@ -65,7 +65,7 @@
               <li><a href="requestHistory.php?action=new">New Request</a></li>
               <li><a href="requestHistory.php">Request History</a></li>
               <li><a href="#">Account</a></li>
-              <li class="logout"><a href="assets/php/logout.php">Logout</a></li>
+              <li class="logout"><a href="assets/php/classes/command.php?a=logout">Logout</a></li>
             </ul>
           </li>';
             }else{
@@ -578,7 +578,7 @@
        $.ajax({
             type: "POST",
             dataType: "json",
-            url: "assets/php/login.php", 
+            url: "assets/php/classes/command.php?a=login", 
             data: {
               username: $("#username").val(),
               password: sha256($("#password").val())

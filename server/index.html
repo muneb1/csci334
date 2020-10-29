@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" href="" type="image/png" sizes="16x16">
+	<meta name="theme-color" content="" />
+	<meta name="keywords" content="">
+	<meta name="description" content="">
+	<meta name="robots" content=""><!-- Refer here: https://moz.com/learn/seo/robots-meta-directives -->
+	
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="">
+	<title>Websock</title>
+</head>
+<body>
+	<input type="text" id="uid">
+	<button id="connectBtn">Connect</button>
+	<select id="clients">
+		<option>Choose</option>
+	</select>
+	<button id="nofityBtn">Nofity</button>
+	<button id="nofityAllBtn">Nofity All</button>
+	<ul id="notification">
+		
+	</ul>
+	<script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(()=>{
+			$("#connectBtn").click(()=>{
+				var sock = new WebSocket("ws://localhost:56000");
+				sock.onopen = function(event){
+					$("#connectBtn")[0].disabled = true;
+					sock.send('{"action":"open", "uid":"'+ $("#uid").val() +'"}');	
+				};
+
+				sock.onmessage = function(event){
+					const jsonData = JSON.parse(event.data);
+					if(jsonData.action == "notifyAll" || jsonData.action == "notify"){
+						$("#notification").append('<li>'+jsonData.msg+'</li>');
+					}else if(jsonData.action == "list"){
+						const clients = (jsonData.msg).split(",");
+						$("#clients")[0].innerHTML = "<option>Choose</option>";
+						clients.forEach((key)=>{
+							$("#clients").append('<option value = "'+key+'">'+key+'</option>');
+						});
+					}
+					
+				};
+
+				sock.onerror = function(error){
+					console.log(error);
+				}
+
+				$(window).unload(()=>{
+					sock.close(1000,'{"uid":"'+ $("#uid").val() +'"}');
+				});
+
+				$("#nofityBtn").click(()=>{
+					sock.send('{"action":"notify","uid":"'+$("#clients").val()+'"}');
+				});
+
+				$("#nofityAllBtn").click(()=>{
+					sock.send('{"action":"notifyAll"}');
+				});
+			});
+		})
+			
+			
+	</script>
+</body>
+</html>

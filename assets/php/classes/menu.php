@@ -1,5 +1,8 @@
 <?php
 	//This is a menu item abstract class
+	// This is a class without implementing any pattern
+	// This is Menu class that store the menus, will use if for user access control
+	//This class needed to be amend later
 	abstract class Menu_Item{
 		protected $menu_label;
 		protected $menu_path;

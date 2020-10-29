@@ -1,5 +1,7 @@
 <?php
 	//These are the classes that implement Factory Pattern
+	//This class needed to be amend later
+
 	//system user interface class
 	interface User {
 	  public function getPermissionID():string;
@@ -8,13 +10,14 @@
 	//A person have the ability that system user can do
 	abstract class Person implements User{
 	  protected $userID;
-	  protected $first_name;
-	  protected $last_name;
+	  protected $email;
+	  protected $contact;
 	  protected $position;
 
-	  public function __construct($fname, $lname) {
-	    $this->first_name = $fname;
-	    $this->last_name = $lname;
+	  public function __construct($userID, $email, $contact) {
+	    $this->userID = $userID;
+	    $this->email = $email;
+	    $this->contact = $contact;
 	  }
 
 	  public function getID(){
@@ -28,12 +31,16 @@
 
 	//IT technician
 	class CEO extends Person{
-		
-		public function __construct($fname, $lname) {
+		private $first_name;
+		private $last_name;
+
+		public function __construct($userID, $email, $contact, $fname, $lname) {
+		    $this->userID = $userID;
+		    $this->email = $email;
+		    $this->contact = $contact;
 		    $this->first_name = $fname;
 		    $this->last_name = $lname;
-		    $this->position = "CEO";
-		}
+		 }
 
 		public function getPermissionID():string{
 			return 1;
@@ -41,9 +48,12 @@
 
 		public function getData():array{
 			return array(
+				"id"=>$this->userID,
 				"fname"=>$this->first_name,
 				"lname"=>$this->last_name,
-				"position"=>$this->position,
+				"email"=>$this->email,
+				"contact"=>$this->contact,
+				"position"=>"CEO"
 			);
 		}
 	}
@@ -51,11 +61,16 @@
 	//IT technician
 	class Manager extends Person{
 		
-		public function __construct($fname, $lname) {
+		private $first_name;
+		private $last_name;
+
+		public function __construct($userID, $email, $contact, $fname, $lname) {
+		    $this->userID = $userID;
+		    $this->email = $email;
+		    $this->contact = $contact;
 		    $this->first_name = $fname;
 		    $this->last_name = $lname;
-		    $this->position = "Manager";
-		}
+		 }
 
 		public function getPermissionID():string{
 			return 2;
@@ -63,9 +78,12 @@
 
 		public function getData():array{
 			return array(
+				"id"=>$this->userID,
 				"fname"=>$this->first_name,
 				"lname"=>$this->last_name,
-				"position"=>$this->position,
+				"email"=>$this->email,
+				"contact"=>$this->contact,
+				"position"=>"Manager"
 			);
 		}
 	}
@@ -73,11 +91,16 @@
 	//IT technician
 	class IT_Tech extends Person{
 		
-		public function __construct($fname, $lname) {
+		private $first_name;
+		private $last_name;
+
+		public function __construct($userID, $email, $contact, $fname, $lname) {
+		    $this->userID = $userID;
+		    $this->email = $email;
+		    $this->contact = $contact;
 		    $this->first_name = $fname;
 		    $this->last_name = $lname;
-		    $this->position = "IT Technician";
-		}
+		 }
 
 		public function getPermissionID():string{
 			return 3;
@@ -85,9 +108,12 @@
 
 		public function getData():array{
 			return array(
+				"id"=>$this->userID,
 				"fname"=>$this->first_name,
 				"lname"=>$this->last_name,
-				"position"=>$this->position,
+				"email"=>$this->email,
+				"contact"=>$this->contact,
+				"position"=>"IT Technician"
 			);
 		}
 	}

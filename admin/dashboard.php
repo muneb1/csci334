@@ -10,9 +10,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   	
   	<!-- Bootstrap 4 CSS -->
-  	<link rel="stylesheet" type="text/css" href="assets/vendor/bootstrap/css/bootstrap.min.css"></link>
+  	<link rel="stylesheet" type="text/css" href="../assets/vendor/bootstrap/css/bootstrap.min.css"></link>
   	<!-- Our Custom CSS -->
-  	<link rel="stylesheet" type="text/css" href="assets/css/dashboard.css">
+  	<link rel="stylesheet" type="text/css" href="../assets/css/dashboard.css">
 <body>
 	<!-- Loading Page -->
 	<div class="loading-wrapper">
@@ -189,9 +189,9 @@
   	</div>
 
   	<!-- Jquery JS -->
-	<script type="text/javascript" src="assets/vendor/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="../assets/vendor/jquery/jquery.min.js"></script>
 	<!-- Bootstrap JS -->
-	<script type="text/javascript" src="assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../assets/vendor/bootstrap/js/bootstrap.min.js"></script>
 	<!-- Google Chart API JS -->
   	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 

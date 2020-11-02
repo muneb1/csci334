@@ -1,6 +1,7 @@
 body {
   background: #f0f2f5;
-  font-size: 0.875rem; }
+  font-size: 0.875rem;
+  height: 100vh; }
 
 .loading-wrapper {
   position: fixed;
@@ -56,6 +57,12 @@ body {
   50%,
     75% {
     transform: scale(1.5); } }
+.content {
+  position: absolute;
+  top: 90px;
+  right: 0;
+  width: 80%; }
+
 .main {
   padding: 1rem 2rem 1.5rem 2rem;
   margin: 0 auto; }

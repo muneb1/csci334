@@ -6,11 +6,21 @@
 	abstract class Menu_Item{
 		protected $menu_label;
 		protected $menu_path;
+		protected $privacyList;
 
-		public function __construct($label, $path) {
+		public function __construct($label, $path, $pos) {
 		    $this->menu_label = $label;
 		    $this->menu_path = $path;
+		    $this->privacyList = $pos;
 	  	}
+
+	  	public function userAuth($pos){
+			if(in_array($pos, $this->privacyList)){
+				return true;
+			}else{
+				return false;
+			}
+		}
 
 	  	abstract public function print();
 	}
@@ -26,14 +36,19 @@
 
 	class Main_Menu extends Menu_Item{
 		private $subMenuList;
-		public function __construct($label, $path) {
+		public function __construct($label, $path, $pos) {
 		    $this->menu_label = $label;
 		    $this->menu_path = $path;
 		    $this->subMenuList = array();
+		    $this->privacyList = $pos;
 	  	}
 
 	  	public function addSubMenu($subMenu){
 	  		array_push($this->subMenuList, $subMenu);
+	  	}
+
+	  	public function getSubMenus(){
+	  		return $this->subMenuList;
 	  	}
 
 	  	public function print(){

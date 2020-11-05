@@ -13,19 +13,30 @@
 .conversation{
 	padding-right: 15px !important;
 	min-height: 80vh;
-	padding-top: 30px;
 	position: relative;
-	padding-bottom: 206px;
+	background-color: white;
+    padding: 20px !important;
+    padding-bottom: 200px !important;
+    border-radius: 5px;
 	
 	hr{
 		border: 1px black solid;
 	}
+
+	&.client{
+		padding: 0px !important;
+		padding-top: 20px !important;
+		padding-bottom: 220px !important;
+	}
 }
 
 .progressDiv{
-	padding-top: 20px;
 	padding-right: 0;
 	padding-left: 15px !important;
+
+	&.client{
+		padding-top: 20px;
+	}
 
 	& > div{
 		background-color: #dfe6e9;
@@ -44,6 +55,8 @@
 		}
 
 		textarea{
+			font-size: 14px;
+			padding: 10px;
 			width: 100%;
 		}
 
@@ -61,6 +74,9 @@
 			width: 30px;
 			height: 30px;
 			background: url(http://localhost/csci334/assets/img/star_.png) no-repeat center 0px;
+			&.active{
+				background: url(http://localhost/csci334/assets/img/star.png);
+			}
 		}
 	}
 
@@ -109,14 +125,32 @@
 .replyDiv{
 	margin-top: 20px;
 	position: absolute;
-	bottom: 0;
-	width: 100%;
+	bottom: 10px;
+	width: 96%;
+
+	&.client{
+		width: 100%;
+	}
 
 	textarea{
 		width: 100%;
 		resize: none;
 		padding: 10px;
 		margin-top: 7px;
+	}
+}
+
+#replies{
+	max-height: 330px;
+	overflow-y: auto;
+	background-color: white;
+	padding: 0px 0px 15px;
+	border-radius: 10px;
+	margin-top: 10px;
+	padding-right: 15px;
+
+	&.client{
+    	margin-right: -15px;
 	}
 }
 
@@ -130,4 +164,11 @@
 			display: block;
 		}
 	}
+	padding-bottom: 15px;
+	border-bottom: 1px solid rgba(0,0,0,0.2);
+}
+
+#comBtn{
+	margin-left: 0;
+	margin-top: 10px;
 }

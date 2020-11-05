@@ -59,13 +59,22 @@
 
           <?php
             session_start();
-            if(isset($_SESSION["u_name"])){
-              echo '<li class="drop-down"><a href="">'.$_SESSION["u_name"].'</a>
+
+            if(isset($_SESSION["uid"])){
+              if((int)$_SESSION["groupID"] != 1){
+                header("Location: assets/php/classes/run.php?a=logout");
+              }
+              require "assets/php/classes/build.php";
+
+              $userFac = new userFactory();
+              $userObj = $userFac->getUser($_SESSION["groupID"], $_SESSION["uid"]);
+
+              echo '<li class="drop-down"><a href="">'.$userObj->getData()["name"].'</a>
             <ul>
-              <li><a href="requestHistory.php?action=new">New Request</a></li>
+              <li><a type="button" data-toggle="modal" data-target="#newResquest">New Request</a></li>
               <li><a href="requestHistory.php">Request History</a></li>
               <li><a href="#">Account</a></li>
-              <li class="logout"><a href="assets/php/classes/command.php?a=logout">Logout</a></li>
+              <li class="logout"><a href="assets/php/classes/run.php?a=logout">Logout</a></li>
             </ul>
           </li>';
             }else{
@@ -80,7 +89,38 @@
 
     </div>
   </header><!-- End Header -->
-
+  <div class="modal fade" id="newResquest" tabindex="-1" role="dialog" aria-labelledby="newResquest" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="newResquest">New Request</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group row">
+                <label for="subject" class="col-sm-2 col-form-label">Subject</label>
+                <div class="col-sm-10">
+                  <input type="email" class="form-control" id="subject" placeholder="Subject">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="content" class="col-sm-2 col-form-label">Request</label>
+                <div class="col-sm-10">
+                  <textarea type="password" rows="5" class="form-control" id="content" placeholder="Enter your request description here"></textarea>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-main" id="submitRequest">Submit</button>
+          </div>
+        </div>
+      </div>
+  </div>
   <div class="modal" tabindex="-1" id="login-model">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -578,10 +618,11 @@
        $.ajax({
             type: "POST",
             dataType: "json",
-            url: "assets/php/classes/command.php?a=login", 
+            url: "assets/php/classes/run.php?a=login", 
             data: {
               username: $("#username").val(),
-              password: sha256($("#password").val())
+              password: sha256($("#password").val()),
+              position: "client"
             },
             success: function(data) {
               console.log(data);
@@ -594,6 +635,34 @@
         });
       }
     });
+
+    $("#submitRequest").click(()=>{
+      if($("#subject").val() == "" && $("#content").val() == ""){
+        createAlert("danger", "Request subject and content can't empty!");
+      }else if($("#subject").val() == ""){
+        createAlert("danger", "Request subject can't empty!");
+      }else if($("#content").val() == ""){
+        createAlert("danger", "Request content can't empty!");
+      }else{
+       $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "assets/php/classes/run.php?a=createRequest", 
+            data: {
+              subject: $("#subject").val(),
+              content: $("#content").val()
+            },
+            success: function(data) {
+              if(data[0] == false){
+                createAlert("danger", "Request failed to submit");
+              }else{
+                createAlert("success", "Request submited successful");
+                setTimeout(()=>{location.reload()},500);
+              }
+            }
+        });
+      }
+    }); 
 
     function createAlert(type, content){
       $("#alert-div").prepend('<div class="alert alert-'+type+' alert-dismissible fade show" role="alert">'+content+'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');

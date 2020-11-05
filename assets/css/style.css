@@ -42,6 +42,12 @@ h1, h2, h3, h4, h5, h6 {
     border-color: #005b9d;
 }
 
+.btn-main:disabled:hover{
+    color: #fff;
+    background-color: #2487ce;
+    border-color: #2487ce;
+}
+
 .btn-outline-main{
     color: #2487ce;
     background-color: transparent;
@@ -2018,16 +2024,23 @@ section {
 .conversation {
   padding-right: 15px !important;
   min-height: 80vh;
-  padding-top: 30px;
   position: relative;
-  padding-bottom: 206px; }
+  background-color: white;
+  padding: 20px !important;
+  padding-bottom: 200px !important;
+  border-radius: 5px; }
   .conversation hr {
     border: 1px black solid; }
+  .conversation.client {
+    padding: 0px !important;
+    padding-top: 20px !important;
+    padding-bottom: 220px !important; }
 
 .progressDiv {
-  padding-top: 20px;
   padding-right: 0;
   padding-left: 15px !important; }
+  .progressDiv.client {
+    padding-top: 20px; }
   .progressDiv > div {
     background-color: #dfe6e9;
     padding: 20px;
@@ -2040,6 +2053,8 @@ section {
       font-size: 12px;
       display: inline-block; }
     .progressDiv > div textarea {
+      font-size: 14px;
+      padding: 10px;
       width: 100%; }
   .progressDiv .stars {
     width: 90%;
@@ -2052,6 +2067,8 @@ section {
       width: 30px;
       height: 30px;
       background: url(http://localhost/csci334/assets/img/star_.png) no-repeat center 0px; }
+      .progressDiv .stars div.active {
+        background: url(http://localhost/csci334/assets/img/star.png); }
   .progressDiv .progressList {
     font-size: 14px;
     list-style: none;
@@ -2082,17 +2099,40 @@ section {
 .replyDiv {
   margin-top: 20px;
   position: absolute;
-  bottom: 0;
-  width: 100%; }
+  bottom: 10px;
+  width: 96%; }
+  .replyDiv.client {
+    width: 100%; }
   .replyDiv textarea {
     width: 100%;
     resize: none;
     padding: 10px;
     margin-top: 7px; }
 
-.conDiv div {
-  margin-top: 20px; }
-  .conDiv div .title {
-    font-weight: bold;
-    display: block; }
+#replies {
+  max-height: 330px;
+  overflow-y: auto;
+  background-color: white;
+  padding: 0px 0px 15px;
+  border-radius: 10px;
+  margin-top: 10px;
+  padding-right: 15px; }
+  #replies.client {
+    margin-right: -15px; }
+
+.conDiv {
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2); }
+  .conDiv div {
+    margin-top: 20px; }
+    .conDiv div .title {
+      font-weight: bold;
+      display: block; }
+
+#comBtn {
+  margin-left: 0;
+  margin-top: 10px; }
+
+/*# sourceMappingURL=recordHistory.css.map */
+
 

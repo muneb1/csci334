@@ -1,7 +1,123 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  font-family: Roboto;
+  font-style: normal; }
+
 body {
   background: #f0f2f5;
   font-size: 0.875rem;
   height: 100vh; }
+
+header {
+  width: 100%;
+  background: #FFFFFF;
+  padding: 20px 30px;
+  position: absolute;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
+  z-index: 100; }
+  header div {
+    display: grid;
+    justify-content: space-between;
+    grid-template-columns: auto auto;
+    font-size: 22px; }
+  header div:nth-child(1) span {
+    display: inline; }
+  header div:nth-child(2) {
+    font-size: 18px; }
+    header div:nth-child(2) > svg {
+      display: inline;
+      height: 22px;
+      vertical-align: sub;
+      margin-left: 5px; }
+
+.body {
+  height: 100vh; }
+
+nav {
+  background: #323946;
+  color: #FFFFFF;
+  height: 100vh; }
+  nav > ul {
+    list-style-type: none;
+    position: relative;
+    margin-top: 50px; }
+    nav > ul li {
+      margin-bottom: 2px; }
+      nav > ul li a {
+        text-decoration: none;
+        font-size: 16px;
+        padding: 15px 25px;
+        display: block;
+        color: #FFFFFF; }
+        nav > ul li a.dropdown-toggle::after {
+          position: absolute;
+          right: 0;
+          transform: translate(-300%, 10px); }
+        nav > ul li a.dropdown-toggle[aria-expanded="false"]::after {
+          position: absolute;
+          right: 0;
+          transform: translate(-300%, 10px) rotate(-90deg); }
+        nav > ul li a:hover {
+          background: #57606f;
+          color: #FFFFFF;
+          text-decoration: none; }
+      nav > ul li.active {
+        background: #57606f;
+        color: #FFFFFF;
+        text-decoration: none; }
+    nav > ul ul li a {
+      font-size: 14px;
+      padding-left: 50px; }
+
+footer {
+  width: 100%;
+  background: #FFFFFF;
+  padding: 20px 0;
+  position: absolute; }
+
+main {
+  min-height: calc(100vh - 137px); }
+
+.content {
+  overflow: hidden;
+  overflow-y: auto;
+  background-color: #ecf0f1;
+  padding-top: 75px;
+  height: 100vh;
+  position: relative; }
+
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #323946;
+  margin-bottom: 20px; }
+
+.btn-main {
+  color: #fff;
+  background-color: #2487ce;
+  border-color: #2487ce; }
+
+.btn-main:hover {
+  color: #fff;
+  background-color: #005b9d;
+  border-color: #005b9d; }
+
+.btn-main:disabled:hover {
+  color: #fff;
+  background-color: #2487ce;
+  border-color: #2487ce; }
+
+.btn-outline-main {
+  color: #2487ce;
+  background-color: transparent;
+  border: #2487ce 2px solid; }
+
+.btn-outline-main:hover {
+  color: #fff;
+  background-color: #2487ce; }
 
 .loading-wrapper {
   position: fixed;
@@ -57,35 +173,21 @@ body {
   50%,
     75% {
     transform: scale(1.5); } }
-.content {
-  position: absolute;
-  top: 90px;
-  right: 0;
-  width: 80%; }
-
-.main {
-  padding: 1rem 2rem 1.5rem 2rem;
-  margin: 0 auto; }
-  .main .page-title-wrapper {
-    margin-bottom: 1rem; }
-    .main .page-title-wrapper .page-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #14487C; }
-  .main .dashboard > .row {
-    padding: 15px 0; }
-  .main .dashboard .home-container {
-    height: 100%;
+.dashboard {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  align-content: flex-start;
+  grid-gap: 15px; }
+  .dashboard .home-container {
+    width: 49%;
     padding: 30px;
     box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.25);
     border-radius: 0.25rem;
     background-color: #ffffff; }
-    .main .dashboard .home-container h5 {
+    .dashboard .home-container h5 {
       margin-bottom: 30px; }
-    .main .dashboard .home-container .row {
-      padding-bottom: 20px; }
-    .main .dashboard .home-container #column-chart, .main .dashboard .home-container #pie-chart {
-      width: 640px;
-      height: 320px; }
 
 /*# sourceMappingURL=dashboard.css.map */

@@ -1,0 +1,13 @@
+@import 'root';
+
+#addStaff{
+	.modal-body span{
+		line-height: 36px;
+   		font-size: 1rem;
+	}
+
+	input{
+		padding: .375rem .75rem;
+		margin-bottom: 10px;
+	}
+}

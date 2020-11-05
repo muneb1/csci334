@@ -1,0 +1,20 @@
+@import 'root';
+
+.tablelist{
+	background-color: $white;
+	padding: 25px 20px !important;
+	border-radius: 10px;
+	font-size: 1rem;
+
+	a.view{
+		font-size: 1rem;
+		text-decoration: underline;
+		color: $main;
+		transition: 0.5s all ease-in-out;
+
+		&:hover{
+			font-weight: bold;
+			color: $darkmain;
+		}
+	}
+}

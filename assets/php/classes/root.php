@@ -1,8 +1,8 @@
 <?php
 
-define("ROOT_PATH", "csci334/", FALSE);
-require "menu.php";
-require "config.php";
+define("ROOT_PATH", "/csci334/", FALSE);
+require_once "menu.php";
+require_once "config.php";
 
 // This is a class without implementing Singleton Pattern
 // This is root class from the whole program, is like the engine from the program, the program stucture and core stored here
@@ -46,7 +46,7 @@ class ADTECH{
 
 	    $tempArray = array();
 	    foreach (self::$mainMenu as &$value) {
-	    	array_push($tempArray, $value->print());
+	    	array_push($tempArray, $value);
 	    }
 
 		return $tempArray;

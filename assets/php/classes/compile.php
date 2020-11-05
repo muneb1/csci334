@@ -1,6 +1,6 @@
 <?php
-	require "root.php";
-	require "person.php";
+	require_once "root.php";
+	require_once "person.php";
 	
 	$user = new IT_Tech("Dexter","Sia");
 	//echo $user->homeDir();

@@ -59,10 +59,17 @@
 
           <?php
             session_start();
-            if(isset($_SESSION["u_name"])){
-              echo '<li class="drop-down"><a href="">'.$_SESSION["u_name"].'</a>
+            if(isset($_SESSION["uid"])){
+              if((int)$_SESSION["groupID"] != 1){
+                header("Location: assets/php/classes/run.php?a=logout");
+              }
+              require "assets/php/classes/build.php";
+              $userFac = new userFactory();
+              $userObj = $userFac->getUser($_SESSION["groupID"], $_SESSION["uid"]);
+
+              echo '<li class="drop-down"><a href="">'.$userObj->getData()["name"].'</a>
             <ul>
-              <li><a href="requestHistory.php?action=new">New Request</a></li>
+              <li><a type="button" data-toggle="modal" data-target="#newResquest">New Request</a></li>
               <li><a href="requestHistory.php">Request History</a></li>
               <li><a href="#">Account</a></li>
               <li class="logout"><a href="assets/php/logout.php">Logout</a></li>
@@ -107,53 +114,26 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-main">Submit</button>
+            <button type="button" class="btn btn-main" id="submitRequest">Submit</button>
           </div>
         </div>
       </div>
-    </div>
+  </div>
   <main id="main">
     <section id="requestHistory">
       <div class="row">
         <div class="container">
           <div class="d-flex no-gutters justify-content-between align-items-center mb-3"> 
             <h2 class="col-10">Request History</h2>
-            <a href="requestHistory.php?action=new" class="btn btn-sm btn-outline-main">New Request</a>
+            <a  type="button" data-toggle="modal" data-target="#newResquest" class="btn btn-sm btn-outline-main">New Request</a>
           </div>
             
         </div>
       </div>
       <div class="row">
         <div class="container">
-          <table class="table table-sm table-hover" id="record_table">
-            <thead>
-              <tr>
-                <th scope="col">Request#</th>
-                <th scope="col">Subject</th>
-                <th scope="col">Created Date</th>
-                <th scope="col">Completed Date</th>
-                <th scope="col">Status</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="font-weight-bold">
-                <td scope="row">20200919011</td>
-                <td>Hardware problem</td>
-                <td>2020/09/19 14:26</td>
-                <td>-</td>
-                <td>On-Going</td>
-                <td><button class="btn btn-sm btn-main">View</button></td>
-              </tr>
-              <tr>
-                <td scope="row">20200910001</td>
-                <td>Software problem</td>
-                <td>2020/09/10 10:03</td>
-                <td>2020/09/10 14:19</td>
-                <td>Completed</td>
-                <td><button class="btn btn-sm btn-main">View</button></td>
-              </tr>
-            </tbody>
+          <table class="table table-sm table-hover tablelist" id="record_table">
+           
           </table>
         </div>
       </div>
@@ -257,15 +237,63 @@
   <script src="assets/js/main.js"></script>
   <script type="text/javascript">
 
-    <?php
-      if(isset($_GET["action"]) && $_GET["action"] == "new"){
-        echo '$("#newResquest").modal(\'show\');';
-      }
-    ?>
-
     $(".close-modal").click(()=>{
       console.log("Tas");
       location.href = "requestHistory.php";
+    });
+
+    $(document).ready(()=>{
+      $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "assets/php/classes/run.php?a=getResHistory", 
+            success: function(data) {
+              $table_content = "";
+              $table_content = '<thead><tr><th scope="col">Request#</th><th scope="col">Subject</th><th scope="col">Created Date</th><th scope="col">Last Updated</th><th scope="col">Status</th></tr></thead><tbody>';
+              data[1].forEach((res)=>{
+                $status = "";
+                switch(res["status"]){
+                  case "1": $status = "New"; break;
+                  case "2": $status = "Pending"; break;
+                  case "3": $status = "On-Going"; break;
+                  case "4": $status = "Pending"; break;
+                  case "5": $status = "Waiting for Review"; break;
+                  case "6": $status = "Completed"; break;
+                }
+                $table_content += '<tr><td scope="row"><a href="viewRequest.php?v='+res["rid"]+'" class="view">'+res["rid"]+'</a></td><td>'+res["subject"]+'</td><td>'+res["createdDate"]+'</td><td>'+res["updatedDate"]+'</td><td>'+$status+'</td></tr>';
+              });
+              $table_content += '</tbody>';
+              $("#record_table").append($table_content);
+            }
+        });
+
+      $("#submitRequest").click(()=>{
+        if($("#subject").val() == "" && $("#content").val() == ""){
+          createAlert("danger", "Request subject and content can't empty!");
+        }else if($("#subject").val() == ""){
+          createAlert("danger", "Request subject can't empty!");
+        }else if($("#content").val() == ""){
+          createAlert("danger", "Request content can't empty!");
+        }else{
+         $.ajax({
+              type: "POST",
+              dataType: "json",
+              url: "assets/php/classes/run.php?a=createRequest", 
+              data: {
+                subject: $("#subject").val(),
+                content: $("#content").val()
+              },
+              success: function(data) {
+                if(data[0] == false){
+                  createAlert("danger", "Request failed to submit");
+                }else{
+                  createAlert("success", "Request submited successful");
+                  setTimeout(()=>{location.reload()},500);
+                }
+              }
+          });
+        }
+      });
     });
     
 

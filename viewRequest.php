@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>AdTech IT Consulting</title>
+  <title>View Request:AdTech IT Consulting</title>
   <meta content="" name="descriptison">
   <meta content="" name="keywords">
 
@@ -51,7 +51,7 @@
 
       <nav class="nav-menu d-none d-lg-block">
         <ul>
-          <li class="active"><a href="index.php">Home</a></li>
+          <li><a href="index.php">Home</a></li>
           <li><a href="index.php#about">About</a></li>
           <li><a href="index.php#team">Team</a></li>
           <li><a href="index.php#pricing">Pricing</a></li>
@@ -59,15 +59,29 @@
 
           <?php
             session_start();
-            if(isset($_SESSION["u_name"])){
-              echo '<li class="drop-down"><a href="">'.$_SESSION["u_name"].'</a>
+            if(isset($_SESSION["uid"])){
+              if((int)$_SESSION["groupID"] != 1){
+                header("Location: assets/php/classes/run.php?a=logout");
+              }
+              require "assets/php/classes/build.php";
+              $userFac = new userFactory();
+              $userObj = $userFac->getUser($_SESSION["groupID"], $_SESSION["uid"]);
+
+              echo '<li class="drop-down"><a href="">'.$userObj->getData()["name"].'</a>
             <ul>
-              <li><a href="requestHistory.php?action=new">New Request</a></li>
+              <li><a type="button" data-toggle="modal" data-target="#newResquest">New Request</a></li>
               <li><a href="requestHistory.php">Request History</a></li>
               <li><a href="#">Account</a></li>
               <li class="logout"><a href="assets/php/logout.php">Logout</a></li>
             </ul>
           </li>';
+             require_once "assets/php/classes/build.php";
+              require_once "assets/php/classes/command.php";
+
+              $getRequest = new getRequest(AdTech::getDB());
+              $getRequest->setParam([$_SESSION["uid"],$_GET["v"]]);
+              $data = json_decode($getRequest->execute())->{"1"}[0];
+
             }else{
               header("Location: index.php");
             }
@@ -80,83 +94,119 @@
 
     </div>
   </header><!-- End Header -->
-
+  <div class="modal fade" id="newResquest" tabindex="-1" role="dialog" aria-labelledby="newResquest" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="newResquest">New Request</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group row">
+                <label for="subject" class="col-sm-2 col-form-label">Subject</label>
+                <div class="col-sm-10">
+                  <input type="email" class="form-control" id="subject" placeholder="Subject">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="content" class="col-sm-2 col-form-label">Request</label>
+                <div class="col-sm-10">
+                  <textarea type="password" rows="5" class="form-control" id="content" placeholder="Enter your request description here"></textarea>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-main" id="submitRequest">Submit</button>
+          </div>
+        </div>
+      </div>
+  </div>
   <main id="main">
     <section>
       <div class="container">
         <div class="row no-gutters">
-          <div class="col-9 conversation">
-            <h2>Hardware problem (20200919011)</h2>
+          <div class="col-9 conversation client">
+            <h2><?php echo $data->{"subject"}." (" . $data->{"rid"} . ")"?></h2>
             <hr>
             <div class="row">
               <div class="col-2">
                 <span>Description: </span>
               </div>
               <div class="col-10">
-                <span>We faced a hardware problem, our monitor not working, we getting an error with error code ERR1001.</span>
+                <span><?php echo $data->{"description"} ?></span>
               </div>
             </div>
-            <div class="d-flex justify-content-between align-items-baseline conDiv">
-              <div>
-                <span class="title">System</span>
-                <span class="content">Wei Han had assigned to help you</span>
-              </div>
-              <span>2020/09/19 14:30</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-baseline conDiv">
-              <div>
-                <span class="title">IT Technician</span>
-                <span class="content">Hi, can I have more details regarding the problem?</span>
-              </div>
-              <span>2020/09/19 14:31</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-baseline conDiv">
-              <div>
-                <span class="title">IT Technician</span>
-                <span class="content">Hi, can I have more details regarding the problem?</span>
-              </div>
-              <span>2020/09/19 14:31</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-baseline conDiv">
-              <div>
-                <span class="title">IT Technician</span>
-                <span class="content">Hi, can I have more details regarding the problem?</span>
-              </div>
-              <span>2020/09/19 14:31</span>
-            </div>
-
-            <div class="replyDiv">
+            <div id="replies"></div>
+            <div class="replyDiv client">
               <div class="d-flex justify-content-between align-items-center">
                 <b>Enter your reply:</b>
-                <button class="btn btn-sm btn-main">Reply</button>
+                <?php 
+                  if ($data->{"status"} <= 2 || $data->{"status"} > 4){
+                    echo '<button class="btn btn-sm btn-main" disabled id="replyBtn">Reply</button>';
+                  } else{
+                    echo '<button class="btn btn-sm btn-main" id="replyBtn">Reply</button>';
+                  }
+
+                ?>
+                
               </div>
-              <textarea rows="5"></textarea>
+              <?php 
+                if ($data->{"status"} <= 2){
+                  echo '<textarea rows="5" disabled id="replyContent"></textarea>';
+                } else if ($data->{"status"} > 4){
+                  echo '<textarea rows="5" disabled id="replyContent">The request is closed, you can’t reply any more. Please create a new request if you faced a new issue.</textarea>';
+                } else{
+                  echo '<textarea autofocus rows="5" id="replyContent"></textarea>';
+                }
+
+              ?>
+                
+              
             </div>
-            
           </div>
-          <div class="col-3 progressDiv">
+          <div class="col-3 progressDiv client">
             <div>
-              <b>Requrest status:</b>
+              <b>Request status:</b>
               <ul class="progressList">
-                <li class="checked">Request created<span class="time">2020/09/19 14:26</span></li>
-                <li class="checked">IT technician assigned<span class="time">2020/09/19 14:30</span><span><b>Wei Han</b> will help you to solve the issue.</span></li>
-                <li>Issue resolved<span class="time"></span></li>
+                <li class="checked">Request created<span class="time"><?php echo $data->{"createdDate"} ?></span></li>
+                <?php 
+                  if($data->{"status"} == 1) {
+                    echo '<li>Waiting for IT Technician</li>';
+                  }else{
+                    echo '<li class="checked">IT technician assigned<span class="time">'.$data->{"assignedDate"}.'</span><span><b>'.$data->{"assignedTo"}.'</b> will help you to solve the issue.</span></li>';
+                  }
+                  if($data->{"status"} == 5) {
+                    echo '<li class="checked">Issue resolved<span class="time">'.$data->{"completedDate"}.'</span></li>';
+                  }else{
+                    echo '<li>Issue resolved<span class="time"></span></li>';
+                  }
+                ?>
               </ul>
-              <b>Service review:</b>
-              <span>Please rate our service and give us a comment below</span>
-              <div class="stars">
-                <div class="star" data-star="1"></div>
-                <div class="star" data-star="2"></div>
-                <div class="star" data-star="3"></div>
-                <div class="star" data-star="4"></div>
-                <div class="star" data-star="5"></div>
-              </div>
-              <b>Please leave a comment:</b>
-              <textarea rows="4"></textarea>
-              <button class="btn btn-sm btn-main" style="float: right">Submit</button>
-
-
-
+              <?php
+                if($data->{"status"} == 5){
+                  echo '<b>Service review:</b><span>Please rate our service and give us a comment below</span>';
+                  echo '<div class="stars"><div class="star" data-star="1"></div><div class="star" data-star="2"></div><div class="star" data-star="3"></div><div class="star" data-star="4"></div><div class="star" data-star="5"></div></div>';
+                  echo '<b>Please leave a comment:</b><textarea rows="4" id="reviewContent"></textarea>';
+                  echo '<button class="btn btn-sm btn-main" style="float: right" id="subReviewBtn">Submit Review</button>';
+                }else if($data->{"status"} == 6){
+                   echo '<b>Service review:</b><span>Please rate our service and give us a comment below</span>';
+                  echo '<div class="stars">';
+                  for($i = 1; $i <= 5; $i++){
+                    if($i <= $data->{"review"}){
+                      echo '<div class="star active" data-star="'.$i.'"></div>';
+                    }else{
+                      echo '<div class="star" data-star="'.$i.'"></div>';
+                    }
+                  }
+                  echo '</div><b>Please leave a comment:</b><textarea disabled rows="4" id="reviewContent">'.$data->{"comment"}.'</textarea>';
+                  echo '<span class="float-right">Reviewed by: '.$data->{"reviewedDate"}.'</span>';
+                }
+              ?>
 
             </div>
             
@@ -263,54 +313,171 @@
   <script src="assets/js/sha256.js"></script>
   <script src="assets/js/main.js"></script>
   <script type="text/javascript">
-
-    <?php
-      if(isset($_GET["action"]) && $_GET["action"] == "new"){
-        echo '$("#newResquest").modal(\'show\');';
-      }
-    ?>
+    var rid = <?php echo $_GET["v"] ?>;
+    var uid = <?php echo '"'.$userObj->getData()["id"].'"'?>;
+    var status = <?php echo $data->{"status"} ?>;
 
     $(".close-modal").click(()=>{
-      console.log("Tas");
       location.href = "requestHistory.php";
     });
+
+    if(status >= 5){
+      $("#subReviewBtn").click(()=>{
+        var reviewContent = $("#reviewContent").val();
+        var starCount = 0;
+        starCount = $(".star.active").length;
+        if(reviewContent != "" && starCount != 0){
+          $.ajax({
+              type: "POST",
+              dataType: "json",
+              url: "assets/php/classes/run.php?a=submitReview", 
+              data: {
+                comment: reviewContent,
+                star: starCount,
+                rid: rid
+              },
+              success: function(data) {
+                if(data == true){
+                   location.reload();
+                }
+              }
+          });
+        }
+  
+      });
+    }
+
+    $(document).ready(()=>{
+      getReply(rid);
+      $("#submitRequest").click(()=>{
+        if($("#subject").val() == "" && $("#content").val() == ""){
+          createAlert("danger", "Request subject and content can't empty!");
+        }else if($("#subject").val() == ""){
+          createAlert("danger", "Request subject can't empty!");
+        }else if($("#content").val() == ""){
+          createAlert("danger", "Request content can't empty!");
+        }else{
+         $.ajax({
+              type: "POST",
+              dataType: "json",
+              url: "assets/php/classes/run.php?a=createRequest", 
+              data: {
+                subject: $("#subject").val(),
+                content: $("#content").val()
+              },
+              success: function(data) {
+                if(data[0] == false){
+                  createAlert("danger", "Request failed to submit");
+                }else{
+                  createAlert("success", "Request submited successful");
+                  setTimeout(()=>{location.reload()},500);
+                }
+              }
+          });
+        }
+      });
+
+      $("#replyBtn").click(()=>{
+        if($("#replyContent").val() != ""){
+          $.ajax({
+              type: "POST",
+              dataType: "json",
+              url: "assets/php/classes/run.php?a=addReply", 
+              data: {
+                rid: rid,
+                content: $("#replyContent").val(),
+                uid: uid
+              },
+              success: function(data) {
+                if(data[0] == true){
+                  getReply(rid);
+                  $("#replyContent").val("");
+                }
+              }
+          });
+        }
+      });
+    });
     
+    function getReply(requestID){
+      $.ajax({
+          type: "POST",
+          dataType: "json",
+          url: "assets/php/classes/run.php?a=getReplies", 
+          data: {
+            rid: requestID
+          },
+          success: function(data) {
+            var tempStr = "";
+            $("#replies")[0].innerHTML = "";
+            data[1].forEach((reply)=>{
+              tempStr = '<div class="d-flex justify-content-between align-items-baseline conDiv"><div>';
+              if(reply["creator"] == null){
+                tempStr += '<span class="title">System</span>';
+              }else{
+                if(reply["groupping"] == 0){
+                  tempStr += '<span class="title">IT Technician ('+capitalizeFirstLetter(reply["creator"])+')</span>';
+                }else{
+                  tempStr += '<span class="title">You</span>';
+                }
+                
+              }
+            
+              tempStr += '<span class="content">'+reply["content"]+'</span>';
+              tempStr += '</div><span>'+reply["createdTime"]+'</span></div>';
+              $("#replies").append(tempStr);
+            });
+          }
+      });
+    }
 
     function createAlert(type, content){
       $("#alert-div").prepend('<div class="alert alert-'+type+' alert-dismissible fade show" role="alert">'+content+'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
     }
 
-    var rated = false;
+    if(status == 5){
+      var rated = false;
 
-    $(".star").mouseenter((event)=>{
-      for(var i = 0; i < event.currentTarget.getAttribute("data-star"); i++){
-        $(".star")[i].style.backgroundImage = "url(http://localhost/csci334/assets/img/star.png)";
-      }
-      if(rated == true){
-          $(".star").mouseleave((event)=>{
-            for(var i = 0; i < 5; i++){
-              $(".star")[i].style.backgroundImage = "";
-            }
-          });
+      $(".star").mouseenter((event)=>{
+        for(var i = 0; i < event.currentTarget.getAttribute("data-star"); i++){
+          $(".star")[i].classList.add("active");
+        }
+        if(rated == true){
+            $(".star").mouseleave((event)=>{
+              for(var i = 0; i < 5; i++){
+                 $(".star")[i].classList.remove("active");
+              }
+            });
 
-      }
-    });
-    $(".star").mouseleave((event)=>{
-      for(var i = 0; i < 5; i++){
-        $(".star")[i].style.backgroundImage = "";
-      }
-    });
+        }
+      });
+      $(".star").mouseleave((event)=>{
+        for(var i = 0; i < 5; i++){
+          $(".star")[i].classList.remove("active");
+        }
+      });
 
-    $(".star").click((event)=>{
-      console.log(event.currentTarget.getAttribute("data-star"));
-      for(var i = 0; i < event.currentTarget.getAttribute("data-star"); i++){
-          $(".star")[i].style.backgroundImage = "url(http://localhost/csci334/assets/img/star.png)";
-          console.log("asd");
-      }
+      $(".star").click((event)=>{
+        for(var i = 0; i < event.currentTarget.getAttribute("data-star"); i++){
+            $(".star")[i].classList.add("active");
+        }
 
-      $(".star").off("mouseleave");
-      rated = true;
-    });
+        $(".star").off("mouseleave");
+        rated = true;
+      });
+    }
+
+      
+
+    function capitalizeFirstLetter(string) {
+      return string.split(' ').map(capitalize).join('_');
+    }
+    
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    
   </script>
 </body>
 

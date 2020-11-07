@@ -11,7 +11,6 @@ class ADTECH{
 	private static $instance = null;
 	private static $mysqli;
 	private static $mainMenu;
-	private static $notifier;
 
 	private function __construct() {
 
@@ -59,15 +58,6 @@ class ADTECH{
 	    }
 
 		return self::$mysqli;
-	}
-
-	public static function getNotifier(){
-		if (self::$instance == null)
-	    {
-	      self::$instance = new ADTECH();
-	    }
-
-		return self::$notifier;
 	}
 
 	public static function getInstance()

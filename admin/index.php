@@ -324,7 +324,7 @@
 		var rid;
 		var uid = <?php echo '"'. $userObj->getData()["id"] .'"' ?>;
 		var position = <?php echo '"'. $userObj->getPermissionID() .'"' ?>;
-		var overdueSize = <?php echo sizeof($result_arr) ?>;
+		 <?php if(isset($result_arr)) echo "var overdueSize =". sizeof($result_arr) ?>;
 
 		//connect to socket
 		var sock = new WebSocket("ws://localhost:55000");

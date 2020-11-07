@@ -9,6 +9,9 @@
 		protected $userID;
 		protected $email;
 		protected $contact;
+
+		abstract function getPermissionID():string;
+		abstract function getData():array;		
 	}
 
 	abstract class Staff extends User{

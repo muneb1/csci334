@@ -59,8 +59,10 @@
 		              console.log(data);
 		              if(data[0] == false){
 		                createAlert("danger", "Wrong username or password!");
+		              }else if(data[1] == "3"){
+		                location.href = "/csci334/admin/customerRequest.php";
 		              }else{
-		                location.href = "/csci334/admin";
+		              	location.href = "/csci334/admin";
 		              }
 		            }
 		        });

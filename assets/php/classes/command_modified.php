@@ -578,11 +578,25 @@
 							$ttl += $overtime;
 						}else if($this->byDay){
 							$date = date("y-m-d",strtotime($row["startTime"]));
-							if($this->checkexist($byday_arr,$date)){
+
+							//before
+							$found;
+							$this->checkexist($byday_arr,$date,$found);
+							if($found){
 								$byday_arr[$date] += (int) $overtime;
 							}else{
 								$byday_arr[$date] = (int) $overtime;
 							}
+
+							//after
+							$found = $this->checkexist($byday_arr,$date);
+							if($found){
+								$byday_arr[$date] += (int) $overtime;
+							}else{
+								$byday_arr[$date] = (int) $overtime;
+							}
+
+
 						}else{
 							array_push($result_arr, array(
 								"sTime"=>$row["startTime"],
@@ -598,6 +612,7 @@
 						"sid"=>$this->sid,
 						"total"=>$ttl
 					));
+					return $result_arr;
 				}
 
 				if($this->byDay){
@@ -605,9 +620,10 @@
 						array_push($result_arr, array(
 							"date"=>$key,
 							"second"=>$value,
-							"hours"=>$this->secToHR($overtime)
+							"hours"=>secToHR($overtime)
 						));
 					}
+					return $result_arr;
 				}
 			}else{
 				if($this->calSum){
@@ -615,12 +631,14 @@
 						"sid"=>$this->sid,
 						"total"=>0
 					));
+					return $result_arr;
 				}
 			}
 
 			return $result_arr;
 		}
 
+		//after
 		private function checkexist($array,$key){
 			foreach ($array as $arr_key => $value) {
 				if($arr_key == $key){
@@ -628,6 +646,16 @@
 				}
 			}
 			return false;
+		}
+
+		//before
+		private function checkexist($array,$key,&$found){
+			$found = false;
+			foreach ($array as $arr_key => $value) {
+				if($arr_key == $key){
+					$found = true;
+				}
+			}
 		}
 
 		private function adjClockIn($clockIn){
@@ -687,6 +715,7 @@
 		private function secToHR($seconds) {
 		  $hours = floor($seconds / 3600);
 		  $minutes = floor(($seconds / 60) % 60);
+
 		  if($hours > 1){
 		  	$hours = $hours . " hours";
 		  }else if($hours <= 0){
@@ -907,7 +936,8 @@
 
 		private function getMinutes($seconds){
 			$hours = floor($seconds / 3600);
-		  $minutes = floor(($seconds / 60) % 60);
+		  	$minutes = floor(($seconds / 60) % 60);
+
 		  if($hours > 1){
 		  	$hours = $hours . " hrs";
 		  }else if($hours <= 0){

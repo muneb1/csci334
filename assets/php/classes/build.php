@@ -10,6 +10,7 @@
 	$customerMenu = new Main_Menu("Customer Requests",ROOT_PATH."admin/customerRequest.php", [2,3]);
 	$staffMenu = new Main_Menu("Staff", ROOT_PATH."admin/staff.php", [2]);
 	$reportMenu = new Main_Menu("Reports", ROOT_PATH."admin/reports.php", [1]);
+	$overtimeMenu = new Main_Menu("Overtime Reports", ROOT_PATH."admin/overtime.php", [3]);
 
 	$allCus = new Sub_Menu("All Requests", ROOT_PATH."admin/customerRequest.php", [2,3]);
 	$newCus = new Sub_Menu("New Requests", ROOT_PATH."admin/customerRequest.php?f=new", [2,3]);
@@ -30,6 +31,7 @@
 	ADTECH::addMenu($customerMenu);
 	ADTECH::addMenu($staffMenu);
 	ADTECH::addMenu($reportMenu);
+	ADTECH::addMenu($overtimeMenu);
 	
 
 ?>

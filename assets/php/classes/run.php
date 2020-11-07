@@ -240,11 +240,12 @@
 			$createNoti->setParam($param);
 			echo $createNoti->execute();
 			break;
-		case "test":
+		case "getOvertime":
 			$overtimeCal = new getOverTime(ADTECH::getDB());
-			$param = array("dexter");
+			//$param = array($_POST["sid"],false,true);
+			$param = array('dexter',false,true);
 			$overtimeCal->setParam($param);
-			print_r($overtimeCal->execute());
+			echo json_encode($overtimeCal->execute());
 			break;
 	} 	
 

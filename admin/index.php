@@ -119,7 +119,6 @@
 					    <?php echo $userObj->getData()["fname"] . " " . $userObj->getData()["lname"] ." (". $userObj->getData()["position"] . ")"?>
 					  </button>
 					  <div class="dropdown-menu dropdown-menu-right">
-					    <a class="dropdown-item" href="#">Account</a>
 					    <a class="dropdown-item logout" href="../assets/php/classes/run.php?a=logout&p=admin">Logout</a>
 					  </div>
 					</div>
@@ -367,20 +366,26 @@
 	          	pos: position
 	          },
 	          success: function(data) {
-	          	if(data[2] == "0"){
-	          		$(".noti-num")[0].style.display = "none";
+	          	if(data[0] == true){
+	          		if(data[2] == "0"){
+		          		$(".noti-num")[0].style.display = "none";
+		          	}else{
+		          		$(".noti-num")[0].style.display = "";
+		          		$(".noti-num")[0].innerHTML = data[2];
+		          	}
+		          	$(".notifications")[0].innerHTML = "";
+		            data[1].forEach((noti)=>{
+		            	if(noti["read"] == 1){
+		            		$(".notifications").append('<div class="notification no-gutters" data-nid=""><div class="col-11"><span class="noti-title read">'+noti["title"]+'</span><span class="noti-content read">'+noti["content"]+'</span><span class="noti-date">'+noti["date"]+'</span></div><div class="col-1"></div></div>');
+		            	}else{
+		            		$(".notifications").append('<div class="notification no-gutters" data-nid="'+noti["nid"]+'"><span class="noti-title"><b>'+noti["title"]+'</b></span><span class="noti-content"><b>'+noti["content"]+'</b></span><span class="noti-date">'+noti["date"]+'</span></div>');
+		            	}
+		            	
+		            });
 	          	}else{
-	          		$(".noti-num")[0].innerHTML = data[2];
+	          		$(".noti-num")[0].style.display = "none";
 	          	}
-	          	$(".notifications")[0].innerHTML = "";
-	            data[1].forEach((noti)=>{
-	            	if(noti["read"] == 1){
-	            		$(".notifications").append('<div class="notification no-gutters" data-nid=""><div class="col-11"><span class="noti-title read">'+noti["title"]+'</span><span class="noti-content read">'+noti["content"]+'</span><span class="noti-date">'+noti["date"]+'</span></div><div class="col-1"></div></div>');
-	            	}else{
-	            		$(".notifications").append('<div class="notification no-gutters" data-nid="'+noti["nid"]+'"><span class="noti-title"><b>'+noti["title"]+'</b></span><span class="noti-content"><b>'+noti["content"]+'</b></span><span class="noti-date">'+noti["date"]+'</span></div>');
-	            	}
-	            	
-	            });
+	          	
 
 	            $(".notification").click((event)=>{
 					if(event.currentTarget.getAttribute("data-nid") != ""){

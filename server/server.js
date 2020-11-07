@@ -2,48 +2,17 @@
 //This is a notifier, notifier run on a "server", that handles the real time notification
 //The notification is actually very simple, just let the related user know, the database is updated
 
-class Channel{
-	constructor(rid){
-		this.rid = rid;
-		this.subscribers = {};
-	}
-
-	addSubscriber(uid, subscriber){
-		this.subscribers[uid] = subscriber;
-  		
-  		this.notiftyAll("list",this.getSubscribers());
-  		console.log(uid + " client connected");
-  	}
-
-}
-
 class Notifier{
 
 	constructor() {
 	    this.subscribers = {};
-	    this.channels = {};
 	    this.addSubscriber = this.addSubscriber.bind(this);
 	}
 
 	addSubscriber(uid, subscriber){
-		/*if(channel != null){
-			var chaObj = JSON.parse(channel);
-			if(!this.channelExist(channel.rid)){
-				var tempCha = new Channel(channel.rid);
-				tempCha.addSubscriber(uid,subscriber);
-				this.channels[channel.rid] = tempCha;
-			}else{
-				this.channels[channel.rid].addSubscriber(uid,subscriber);
-			}
-
-			console.log(uid + " client connected to " + channel.rid);
-		}
-*/
 		this.subscribers[uid] = subscriber;
 		this.notiftyAll("list",this.getSubscribers());
 		console.log(uid + " client connected");
-  		
-  		
   	}
 
   	removeSubscriber(uid, code){
@@ -59,15 +28,6 @@ class Notifier{
 
 	notifySubscriber(action,uid,value){
 		this.subscribers[uid].send('{"action":"'+action+'","msg":"'+value+'"}');
-	}
-
-	channelExist(rid){
-		Object.keys(this.channels).forEach((key)=>{
-			key == rid;
-			return true;
-		});
-
-		return false;
 	}
 
 	getSubscribers(){

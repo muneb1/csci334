@@ -29,34 +29,6 @@
   	<link rel="stylesheet" type="text/css" href="../assets/css/customer.css"></link>
 </head>
 <body>
-	<?php
-		if($userObj->getPermissionID() == 2){
-			echo '<div class="modal fade" id="assginDiv" tabindex="-1" role="dialog" aria-labelledby="assginDiv" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="assginDivTitle">Assign Staff</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="d-flex justify-content-between align-items-center">
-            	<span class="mr-3">Staff:</span>
-            	<select id="staff_sel" class="form-control">
-            		<option value="0">Select a staff</option>
-            	</select>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-main" id="assignCom">Assign</button>
-          </div>
-        </div>
-      </div>
-  </div>';
-		}
-	?>
 	<!-- Loading Page -->
 	<div class="loading-wrapper">
 		<div class="loading-title">
@@ -129,82 +101,10 @@
 			<div class="align-items-stretch content">
 				<!-- Main Content -->
 				<main class="p-4">
-					<h1 class="page-title">Customer Request</h1>
+					<h1 class="page-title">Overtime Reports</h1>
 					<div class="tablelist">
-			          <table class="table table-sm table-hover" id="record_table">
-			       		<?php
-			       			$rFilter = new filterRequest(ADTECH::getDB());
-			       			if(isset($_GET["f"])){
-			       				if($userObj->getPermissionID() == 3){
-			       					$param = array($_GET["f"],$userObj->getData()["id"]);
-			       					
-			       				}else{
-			       					$param = array($_GET["f"]);
-			       				}
-			       				
-			       			}else{
-			       				if($userObj->getPermissionID() == 3){
-			       					$param = array("all",$userObj->getData()["id"]);
-			       					
-			       				}else{
-			       					$param = array("all");
-			       				}
-			       				
-			       			}
-			       			$rFilter->setParam($param);
-			       			$filterResult = $rFilter->execute();
-			       			if(sizeof($filterResult) >= 1){
-			       				$haveAssign = false;
-
-			       				foreach ($filterResult as $req) {
-			       					if($req["status"] == 1){
-			       						$haveAssign = true;
-			       						break;
-			       					}
-			       				}
-		       				
-								if($userObj->getPermissionID() == 2){
-									if($haveAssign == true){
-										echo '<thead><tr><th scope="col" width="10%">Request#</th><th scope="col">Subject</th><th scope="col">Company</th><th scope="col">Assigned Staff</th><th scope="col">Status</th><th scope="col">Last Update</th><th scope="col">Action</th></tr></thead><tbody>';
-									}else{
-										echo '<thead><tr><th scope="col" width="10%">Request#</th><th scope="col">Subject</th><th scope="col">Company</th><th scope="col">Assigned Staff</th><th scope="col">Status</th><th scope="col">Last Update</th></tr></thead><tbody>';
-									}
-			       					
-			       				}else{
-			       					echo '<thead><tr><th scope="col" width="10%">Request#</th><th scope="col">Subject</th><th scope="col">Company</th><th scope="col">Assigned Date</th><th scope="col">Status</th><th scope="col">Last Update</th></tr></thead><tbody>';
-			       				}
-
-			       				foreach ($filterResult as $req) {
-			       					$status = "";
-			       					$assignBtn = "";
-			       					if($req["status"] == 1) $status = "New";
-			       					else if($req["status"] == 2) $status = "Assigned";
-			       					else if($req["status"] == 3) $status = "On-Going";
-			       					else if($req["status"] == 4) $status = "Pending";
-			       					else if($req["status"] == 5) $status = "Completed";
-			       					else if($req["status"] == 6) $status = "Reviewed";
-
-				       				if($userObj->getPermissionID() == 2){
-				       					if($haveAssign == true){
-				       						if($req["status"] == 1)
-				       							echo '<tr><td><a class="view" title="View Request" href="viewRequest.php?v='.$req["rid"].'">'.$req["rid"].'</a></td><td>'.$req["subject"].'</td><td>'.$req["createdBy"].'</td><td>'.$req["assignedTo"].'</td><td>'.$status.'</td><td>'.$req["updateDate"].'</td><td><a class="btn btn-sm btn-main assignBtn" type="button" data-toggle="modal" data-rid="'.$req["rid"].'" data-target="#assginDiv">Assign</a></td></tr>';
-				       						else
-				       							echo '<tr><td><a class="view" title="View Request" href="viewRequest.php?v='.$req["rid"].'">'.$req["rid"].'</a></td><td>'.$req["subject"].'</td><td>'.$req["createdBy"].'</td><td>'.$req["assignedTo"].'</td><td>'.$status.'</td><td>'.$req["updateDate"].'</td><td></td></tr>';
-				       					}
-				       					else
-				       						echo '<tr><td><a class="view" title="View Request" href="viewRequest.php?v='.$req["rid"].'">'.$req["rid"].'</a></td><td>'.$req["subject"].'</td><td>'.$req["createdBy"].'</td><td>'.$req["assignedTo"].'</td><td>'.$status.'</td><td>'.$req["updateDate"].'</td></tr>';
-				       				}else{
-				       					echo '<tr><td><a class="view" title="View Request" href="viewRequest.php?v='.$req["rid"].'">'.$req["rid"].'</a></td><td>'.$req["subject"].'</td><td>'.$req["createdBy"].'</td><td>'.$req["assignedDate"].'</td><td>'.$status.'</td><td>'.$req["updateDate"].'</td></tr>';
-				       				}
-
-				       			}
-
-				       			echo '</tbody></table>';
-			       			}
-			       			
-			       		?>    
-			          </table>
-				     </div>
+			          <div id="column-chart"></div>
+				    </div>
 				</main>
 				<!-- Footer -->
 				<footer id="footer"></footer>
@@ -312,6 +212,9 @@
 		}
 
 		$(document).ready(()=>{
+			google.charts.load('current', {'packages':['corechart']});
+			google.charts.setOnLoadCallback(drawColumnChart);
+
 			getNotification();
 			$('.loading-wrapper').addClass('hide');
 			var rid = "";
@@ -330,26 +233,52 @@
 		      	});
 			});
 
-			$("#assignCom").click(()=>{
-				if($("#staff_sel").val() != 0){
-					$.ajax({
-			          type: "POST",
-			          dataType: "json",
-			          url: "../assets/php/classes/run.php?a=assignStaff",
-			          data:{
-			          	sid: $("#staff_sel").val(),
-			          	rid: rid
-			          },
-			          success: function(data) {
-			            if(data[0] == true){
-			            	sock.send('{"action":"notification"}');
-			            	location.reload();
-			            }
+			function drawColumnChart(){
+		    	var data = new google.visualization.DataTable();
+				data.addColumn('string', 'Date');
+				data.addColumn('number', 'Overtime Working Hours (hour)');
+				data.addColumn({ role: "style" });
+				var overtimeArray = [];
+				$.ajax({
+		              type: "POST",
+		              dataType: "json",
+		              url: "../assets/php/classes/run.php?a=getOvertime", 
+		              data:{
+		              	sid: uid
+		              },
+		              success: function(result) {
+		                result.forEach((day)=>{
+		                	overtimeArray.push({ '0': day["date"], '1': parseFloat((day["second"]/3600).toPrecision(2)) , '2': "#2487ce" });
+		                });
+		                var i = 0;
+						for(;overtimeArray[i];){
+							data.addRows([
+								[overtimeArray[i][0], overtimeArray[i][1], 'color: ' + overtimeArray[i][2]]
+							]);
+							i++;
+						}
 
-			          }
-			      	});
-				}
-			});
+					    var view = new google.visualization.DataView(data);
+					    view.setColumns([0, 1,
+							{ calc: "stringify",
+							sourceColumn: 1,
+							type: "string",
+							role: "annotation" },
+						2]);
+
+					      var options = {
+					        bar: {groupWidth: "90%"},
+					        legend: { position: "none" },
+					        width: 1200,
+  							height: 400,
+					      };
+
+					      var chart = new google.visualization.ColumnChart(document.getElementById("column-chart"));
+					      chart.draw(view, options);
+		              }
+		         });			
+		    }
+
 		});
 		
 	</script>

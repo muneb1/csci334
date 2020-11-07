@@ -3,7 +3,8 @@
 
 $white: #FFFFFF;
 $black: #000000;
-$grey: #C4C4C4;
+$grey: #323946;
+$darkgrey: #2f3640;
 $blue: #323946;
 $lightblue: #57606f;
 $surface: #ecf0f1;
@@ -32,20 +33,20 @@ header {
 	box-shadow: 0px 3px 5px rgba(0,0,0,0.25);
 	z-index: 100;
 
-	div {
+	& > div {
 		display: grid;
 		justify-content: space-between;
 		grid-template-columns: auto auto;
 		font-size: 22px;
 	}
 
-	div:nth-child(1){
+	& > div:nth-child(1){
 		span {
 			display: inline;
 		}
 	}
 
-	div:nth-child(2) {
+	& > div:nth-child(2) {
 		font-size: 18px;
 
 		& > svg {
@@ -160,6 +161,26 @@ h1{
     color: #fff;
     background-color: $main;
     border-color: $main;
+    opacity: 0.5;
+}
+
+.btn-grey{
+    color: #fff !important;
+    background-color: $grey;
+    border-color: $grey;
+    margin: 0px 2px;
+}
+
+.btn-grey:hover{
+    color: #fff !important;
+    background-color: $darkgrey;
+    border-color: $darkgrey;
+}
+
+.btn-grey:disabled:hover{
+    color: #fff;
+    background-color: $grey;
+    border-color: $grey;
 }
 
 .btn-outline-main{
@@ -171,6 +192,81 @@ h1{
 .btn-outline-main:hover{
     color: #fff;
     background-color: #2487ce;
+}
+
+.dropdown-item.logout{
+    &:hover{
+        background-color: #e74c3c;
+    }
+}
+
+.noti_div{
+    position: relative;
+}
+
+.notification-toggle{
+    background-color: transparent;
+    border: none;
+    padding-right: 20px;
+    font-size: 1.6rem;
+
+    &:focus{
+        outline: none;
+    }
+}
+
+.noti-num{
+    background-color: red;
+    border-radius: 50%;
+    display: block;
+    font-size: 0.7rem;
+    line-height: 18px;
+    color: white;
+    height: 18px;
+    width: 18px;
+    text-align: center;
+    position: absolute;
+    right: 12px;
+    top: 0px;
+}
+
+.notifications{
+    max-height: 400px;
+    overflow: auto;
+}
+
+.notification{
+    padding: 7px 15px;
+    width: 380px;
+    cursor: pointer;
+
+    span{
+        display: block;
+    }
+    
+    .noti-date{
+        font-size: 0.7rem;
+        color: $main;
+    }
+
+    .noti-content{
+        font-size: 0.8rem;
+        &.read{
+            opacity: 0.8;
+        }
+    }
+
+    .noti-title{
+        font-size: 1rem;
+        font-weight: bold;
+        &.read{
+            opacity: 0.8;
+        }
+    }
+
+    &:hover{
+        background-color: #dcdde1;
+    }
 }
 
 

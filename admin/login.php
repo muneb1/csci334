@@ -37,6 +37,11 @@
 	<script type="text/javascript" src="../assets/vendor/bootstrap/js/bootstrap.min.js"></script>
 	<script src="../assets/js/sha256.js"></script>
 	<script type="text/javascript">
+		$(document).keydown((event)=>{
+	      if(event.keyCode == 13){
+	        $("#login-btn").click();
+	      }
+	    });
 		$("#login_btn").click(()=>{
 			if($("#username").val() == "" || $("#password").val() == ""){
 		        createAlert("danger", "Username and password can't empty!");

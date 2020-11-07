@@ -21,6 +21,7 @@
 	</select>
 	<button id="nofityBtn">Nofity</button>
 	<button id="nofityAllBtn">Nofity All</button>
+	<button id="notify">Notification</button>
 	<ul id="notification">
 		
 	</ul>
@@ -28,7 +29,7 @@
 	<script type="text/javascript">
 		$(document).ready(()=>{
 			$("#connectBtn").click(()=>{
-				var sock = new WebSocket("ws://localhost:56000");
+				var sock = new WebSocket("ws://localhost:55000");
 				sock.onopen = function(event){
 					$("#connectBtn")[0].disabled = true;
 					sock.send('{"action":"open", "uid":"'+ $("#uid").val() +'"}');	
@@ -62,6 +63,9 @@
 
 				$("#nofityAllBtn").click(()=>{
 					sock.send('{"action":"notifyAll"}');
+				});
+				$("#notify").click(()=>{
+					sock.send('{"action":"notification"}');
 				});
 			});
 		})

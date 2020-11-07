@@ -2,17 +2,48 @@
 //This is a notifier, notifier run on a "server", that handles the real time notification
 //The notification is actually very simple, just let the related user know, the database is updated
 
+class Channel{
+	constructor(rid){
+		this.rid = rid;
+		this.subscribers = {};
+	}
+
+	addSubscriber(uid, subscriber){
+		this.subscribers[uid] = subscriber;
+  		
+  		this.notiftyAll("list",this.getSubscribers());
+  		console.log(uid + " client connected");
+  	}
+
+}
+
 class Notifier{
 
 	constructor() {
 	    this.subscribers = {};
+	    this.channels = {};
 	    this.addSubscriber = this.addSubscriber.bind(this);
 	}
 
 	addSubscriber(uid, subscriber){
-  		this.subscribers[uid] = subscriber;
-  		this.notiftyAll("list",this.getSubscribers());
-  		console.log(uid + " client connected");
+		/*if(channel != null){
+			var chaObj = JSON.parse(channel);
+			if(!this.channelExist(channel.rid)){
+				var tempCha = new Channel(channel.rid);
+				tempCha.addSubscriber(uid,subscriber);
+				this.channels[channel.rid] = tempCha;
+			}else{
+				this.channels[channel.rid].addSubscriber(uid,subscriber);
+			}
+
+			console.log(uid + " client connected to " + channel.rid);
+		}
+*/
+		this.subscribers[uid] = subscriber;
+		this.notiftyAll("list",this.getSubscribers());
+		console.log(uid + " client connected");
+  		
+  		
   	}
 
   	removeSubscriber(uid, code){
@@ -30,6 +61,15 @@ class Notifier{
 		this.subscribers[uid].send('{"action":"'+action+'","msg":"'+value+'"}');
 	}
 
+	channelExist(rid){
+		Object.keys(this.channels).forEach((key)=>{
+			key == rid;
+			return true;
+		});
+
+		return false;
+	}
+
 	getSubscribers(){
 		var tempStr = "";
 		Object.keys(this.subscribers).forEach((key)=>{
@@ -42,7 +82,7 @@ class Notifier{
 
 //Start of socket programming
 var server = require('ws').Server;
-var s = new server({port: 56000});
+var s = new server({port: 55000});
 var notifier = new Notifier();
 
 s.on('connection', (client)=>{
@@ -54,10 +94,14 @@ s.on('connection', (client)=>{
 			notifier.notifySubscriber("notify",jsonData.uid, "Notify");
 		}else if(jsonData.action == "notifyAll"){
 			notifier.notiftyAll("notifyAll", "Notify All");
+		}else if(jsonData.action == "notification"){
+			notifier.notiftyAll("notifyAll", "notification");
+		}else if(jsonData.action == "reply"){
+			notifier.notiftyAll("notifyAll", "reply");
 		}
 	})
 
-	client.on('close', function(code, userJson){
+	client.on('close', function(code, userJson){;
 		const jsonData = JSON.parse(userJson);
 		notifier.removeSubscriber(jsonData.uid,code);
 	})

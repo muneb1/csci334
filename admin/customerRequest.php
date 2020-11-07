@@ -23,6 +23,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 
 	<!-- Bootstrap 4 CSS -->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
   	<link rel="stylesheet" type="text/css" href="../assets/vendor/bootstrap/css/bootstrap.min.css"></link>
   	<link rel="stylesheet" type="text/css" href="../assets/css/root.css"></link>
   	<link rel="stylesheet" type="text/css" href="../assets/css/customer.css"></link>
@@ -79,7 +80,7 @@
 					foreach (ADTECH::getMenu() as $menu) {
 						if($menu->userAuth($userObj->getPermissionID()) == true){
 							if(sizeof($menu->print()["subMenu"]) > 0){
-								echo '<li class="" href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><a>Customer Requests</a><ul class="collapse list-unstyled" id="homeSubmenu">';
+								echo '<li class="" href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><a>'.$menu->print()["label"].'</a><ul class="collapse list-unstyled" id="homeSubmenu">';
 								foreach ($menu->getSubMenus() as $subMenu) {
 									if($subMenu->userAuth($userObj->getPermissionID()) == true){
 										echo '<li><a href="'.$subMenu->print()["path"].'">'.$subMenu->print()["label"].'</a></li>';
@@ -104,11 +105,24 @@
 					<span>AdTech IT Consulting</span>
 				</div>
 
-				<div class="text-right">
-					<span><?php echo $userObj->getData()["fname"] . " " . $userObj->getData()["lname"] ." (". $userObj->getData()["position"] . ")"?></span>
-					<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="svg-inline--fa fa-caret-down fa-w-10" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-						<path fill="currentColor" d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"></path>
-					</svg>
+				<div>
+					<div class="noti_div">
+						<button type="button" class="notification-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="far fa-bell"></i></button>
+						<span class="noti-num">1</span>
+					  <div class="notifications dropdown-menu dropdown-menu-right">
+
+					  </div>
+					</div>
+
+					<div class="btn-group">
+	  					<button type="button" class="btn btn-grey dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					    <?php echo $userObj->getData()["fname"] . " " . $userObj->getData()["lname"] ." (". $userObj->getData()["position"] . ")"?>
+					  </button>
+					  <div class="dropdown-menu dropdown-menu-right">
+					    <a class="dropdown-item" href="#">Account</a>
+					    <a class="dropdown-item logout" href="../assets/php/classes/run.php?a=logout&p=admin">Logout</a>
+					  </div>
+					</div>
 				</div>
 			</header>
 
@@ -206,14 +220,96 @@
 	<!-- Jquery JS -->
 	<script type="text/javascript" src="../assets/vendor/jquery/jquery.min.js"></script>
 	<!-- Bootstrap JS -->
-	<script type="text/javascript" src="../assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 	<!-- Google Chart API JS -->
   	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 	<script type="text/javascript">
 		$("#footer").load("../assets/snippet/footer.html");
 
+		var uid = <?php echo '"'. $userObj->getData()["id"] .'"' ?>;
+		var position = <?php echo '"'. $userObj->getPermissionID() .'"' ?>;
+
+		//connect to socket
+		var sock = new WebSocket("ws://localhost:55000");
+		var userList = [];
+		sock.onopen = function(event){
+			sock.send('{"action":"open", "uid":"'+ uid +'"}');	
+		};
+
+		sock.onmessage = function(event){
+			const jsonData = JSON.parse(event.data);
+			if(jsonData.action == "notifyAll" || jsonData.action == "notify"){
+				console.log(jsonData);
+				if(jsonData.msg == "notification"){
+					getNotification();
+				}
+			}else if(jsonData.action == "list"){
+				const clients = (jsonData.msg).split(",");
+				clients.forEach((key)=>{
+					userList.push(key);
+				});
+			}
+			
+		};
+
+		sock.onerror = function(error){
+			console.log("Can't connect to server");
+		}
+
+		$(window).on("unload", function(e) {
+		    sock.close(1000,'{"uid":"'+ uid +'"}');
+		});
+
+		function getNotification(){
+			$.ajax({
+	          type: "POST",
+	          dataType: "json",
+	          url: "../assets/php/classes/run.php?a=getNotification",
+	          data:{
+	          	uid: uid,
+	          	pos: position
+	          },
+	          success: function(data) {
+	          	if(data[2] == 0){
+	          		$(".noti-num")[0].style.display = "none";
+	          	}else{
+	          		$(".noti-num")[0].style.display = "";
+	          		$(".noti-num")[0].innerHTML = data[2];
+	          	}
+	          	$(".notifications")[0].innerHTML = "";
+	            data[1].forEach((noti)=>{
+	            	if(noti["read"] == 1){
+	            		$(".notifications").append('<div class="notification no-gutters" data-nid=""><div class="col-11"><span class="noti-title read">'+noti["title"]+'</span><span class="noti-content read">'+noti["content"]+'</span><span class="noti-date">'+noti["date"]+'</span></div><div class="col-1"></div></div>');
+	            	}else{
+	            		$(".notifications").append('<div class="notification no-gutters" data-nid="'+noti["nid"]+'"><span class="noti-title"><b>'+noti["title"]+'</b></span><span class="noti-content"><b>'+noti["content"]+'</b></span><span class="noti-date">'+noti["date"]+'</span></div>');
+	            	}
+	            	
+	            });
+
+	            $(".notification").click((event)=>{
+					if(event.currentTarget.getAttribute("data-nid") != ""){
+						$.ajax({
+				          type: "POST",
+				          dataType: "json",
+				          url: "../assets/php/classes/run.php?a=readNoti", 
+				          data:{
+				          	nid: event.currentTarget.getAttribute("data-nid")
+				          },
+				          success: function(data) {
+				            console.log(data);
+				            getNotification();
+				          }
+				      	});
+					}
+						
+				});
+	          }
+	      	});
+		}
+
 		$(document).ready(()=>{
+			getNotification();
 			$('.loading-wrapper').addClass('hide');
 			var rid = "";
 			$(".assignBtn").click((event)=>{
@@ -243,6 +339,7 @@
 			          },
 			          success: function(data) {
 			            if(data[0] == true){
+			            	sock.send('{"action":"notification"}');
 			            	location.reload();
 			            }
 

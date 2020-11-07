@@ -482,7 +482,7 @@
                 </div>
               </div>
               <div class="form-group">
-                <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject" data-rule="minlen:4" data-msg="Please enter at least 8 chars of subject" />
+                <input type="text" class="form-control" name="subject" id="subjects" placeholder="Subject" data-rule="minlen:4" data-msg="Please enter at least 8 chars of subject" />
                 <div class="validate"></div>
               </div>
               <div class="form-group">
@@ -601,68 +601,107 @@
   <script src="assets/js/main.js"></script>
   <script type="text/javascript">
 
-    $('.modal').on('shown.bs.modal', function() {
-      $(this).find('[autofocus]').focus();
-    });
+    var uid = "";
+    <?php if(isset($userObj)) echo 'uid = "'. $userObj->getData()["id"] . '"' ?>;
+    console.log(uid);
 
-    $(document).keydown((event)=>{
-      if($("#login-model")[0].style.display == "block" && event.keyCode == 13){
-        $("#login-btn").click();
+    if(uid != ""){
+      //connect to socket
+      var sock = new WebSocket("ws://localhost:55000");
+      var userList = [];
+      sock.onopen = function(event){
+        sock.send('{"action":"open", "uid":"'+ uid +'"}');  
+      };
+
+      sock.onmessage = function(event){
+        const jsonData = JSON.parse(event.data);
+        if(jsonData.action == "notifyAll" || jsonData.action == "notify"){
+          console.log(jsonData);
+        }else if(jsonData.action == "list"){
+          const clients = (jsonData.msg).split(",");
+          clients.forEach((key)=>{
+            userList.push(key);
+          });
+        }
+        
+      };
+
+      sock.onerror = function(error){
+        console.log("Can't connect to server");
       }
-    });
 
-    $("#login-btn").click(()=>{
-      if($("#username").val() == "" || $("#password").val() == ""){
-        createAlert("danger", "Username and password can't empty!");
-      }else{
-       $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "assets/php/classes/run.php?a=login", 
-            data: {
-              username: $("#username").val(),
-              password: sha256($("#password").val()),
-              position: "client"
-            },
-            success: function(data) {
-              console.log(data);
-              if(data[0] == false){
-                createAlert("danger", "Wrong username or password!");
-              }else{
-                location.reload();
+      $(window).on("unload", function(e) {
+          sock.close(1000,'{"uid":"'+ uid +'"}');
+      });
+    }
+
+    $(document).ready(()=>{
+      $('.modal').on('shown.bs.modal', function() {
+        $(this).find('[autofocus]').focus();
+      });
+
+      $(document).keydown((event)=>{
+        if($("#login-model")[0].style.display == "block" && event.keyCode == 13){
+          $("#login-btn").click();
+        }
+      });
+
+      $("#login-btn").click(()=>{
+        console.log("asd");
+        if($("#username").val() == "" || $("#password").val() == ""){
+          createAlert("danger", "Username and password can't empty!");
+        }else{
+         $.ajax({
+              type: "POST",
+              dataType: "json",
+              url: "assets/php/classes/run.php?a=login", 
+              data: {
+                username: $("#username").val(),
+                password: sha256($("#password").val()),
+                position: "client"
+              },
+              success: function(data) {
+                console.log(data);
+                if(data[0] == false){
+                  createAlert("danger", "Wrong username or password!");
+                }else{
+                  location.reload();
+                }
               }
-            }
-        });
-      }
-    });
+          });
+        }
+      });
 
-    $("#submitRequest").click(()=>{
-      if($("#subject").val() == "" && $("#content").val() == ""){
-        createAlert("danger", "Request subject and content can't empty!");
-      }else if($("#subject").val() == ""){
-        createAlert("danger", "Request subject can't empty!");
-      }else if($("#content").val() == ""){
-        createAlert("danger", "Request content can't empty!");
-      }else{
-       $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "assets/php/classes/run.php?a=createRequest", 
-            data: {
-              subject: $("#subject").val(),
-              content: $("#content").val()
-            },
-            success: function(data) {
-              if(data[0] == false){
-                createAlert("danger", "Request failed to submit");
-              }else{
-                createAlert("success", "Request submited successful");
-                setTimeout(()=>{location.reload()},500);
+      $("#submitRequest").click(()=>{
+        if($("#subject").val() == "" && $("#content").val() == ""){
+          createAlert("danger", "Request subject and content can't empty!");
+        }else if($("#subject").val() == ""){
+          createAlert("danger", "Request subject can't empty!");
+        }else if($("#content").val() == ""){
+          createAlert("danger", "Request content can't empty!");
+        }else{
+         $.ajax({
+              type: "POST",
+              dataType: "json",
+              url: "assets/php/classes/run.php?a=createRequest", 
+              data: {
+                subject: $("#subject").val(),
+                content: $("#content").val()
+              },
+              success: function(data) {
+                if(data[0] == false){
+                  createAlert("danger", "Request failed to submit");
+                }else{
+                  createAlert("success", "Request submited successful");
+                  setTimeout(()=>{location.reload()},500);
+                }
               }
-            }
-        });
-      }
-    }); 
+          });
+        }
+      }); 
+    })
+
+    
 
     function createAlert(type, content){
       $("#alert-div").prepend('<div class="alert alert-'+type+' alert-dismissible fade show" role="alert">'+content+'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');

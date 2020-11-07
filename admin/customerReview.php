@@ -17,7 +17,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Staffs</title>
+	<title>Dashboard</title>
 
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
@@ -27,51 +27,8 @@
   	<link rel="stylesheet" type="text/css" href="../assets/vendor/bootstrap/css/bootstrap.min.css"></link>
   	<link rel="stylesheet" type="text/css" href="../assets/css/root.css"></link>
   	<link rel="stylesheet" type="text/css" href="../assets/css/customer.css"></link>
-  	<link rel="stylesheet" type="text/css" href="../assets/css/staff.css"></link>
 </head>
 <body>
-	<?php
-		if($userObj->getPermissionID() == 2 || $userObj->getPermissionID() == 1){
-			echo '<div class="modal fade" id="addStaff" tabindex="-1" role="dialog" aria-labelledby="addStaff" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="addStaffTitle">Add New Staff</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="row no-gutters"><span class="col-2">Staff ID:</span>
-            	<input id="sid" class="col-4 form-control" type="text" placeholder="Enter Staff ID"><span class="col-2 pl-2">Position</span>
-            		<select class="col-4 form-control" id="position">';
-            	if($userObj->getPermissionID() == 1){
-            		echo '<option value="3">IT Technician</option><option value="2">Manager</option>';
-            	}else if($userObj->getPermissionID() == 2){
-            		echo '<option value="3">IT Technician</option>';
-            	}
-            	
-            	echo '</select><span class="col-2">First Name:</span>
-            	<input id="fname" class="col-4 form-control" type="text" placeholder="Enter First Name">
-            	<span class="col-2 pl-2">Last Name:</span>
-            	<input id="lname" class="col-4 form-control" type="text" placeholder="Enter Last Name">
-            	<span class="col-2">Contact:</span>
-            	<input id="contact" class="col-10 form-control" type="text" placeholder="Enter Contact">
-            	<span class="col-2">Email:</span>
-            	<input id="email" class="col-10 form-control" type="text" placeholder="Enter Email">
-            	<span class="col-2">Password:</span>
-            	<input id="pass" class="col-10 form-control" type="text" placeholder="Enter Password">
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-main" id="addStaffBtn">Save</button>
-          </div>
-        </div>
-      </div>
-  </div>';
-		}
-	?>
 	<!-- Loading Page -->
 	<div class="loading-wrapper">
 		<div class="loading-title">
@@ -145,41 +102,40 @@
 			<div class="align-items-stretch content">
 				<!-- Main Content -->
 				<main class="p-4">
-					<div class="d-flex justify-content-between align-items-start">
-						<h1 class="page-title">Staffs Management</h1>
-						<?php
-							if($userObj->getPermissionID() == 2 || $userObj->getPermissionID() == 1){
-								echo '<button class="btn btn-main" id="addStaff" type="button" data-toggle="modal" data-target="#addStaff">Add Staff</button>';
-							}
-						?>
-						
-					</div>
-					
+					<h1 class="page-title">Customer Request</h1>
 					<div class="tablelist">
 			          <table class="table table-sm table-hover" id="record_table">
 			       		<?php
-			       			$staffList = new getStaffDetails(ADTECH::getDB());
-			       			$staffs = $staffList->execute();
-			       			if(sizeof($staffs) >= 1){
+			       			$rFilter = new filterRequest(ADTECH::getDB());
+			       			$param = array("reviewed");
+			       			$rFilter->setParam($param);
+			       			$filterResult = $rFilter->execute();
+			       			if(sizeof($filterResult) >= 1){
 		       				
-								if($userObj->getPermissionID() == 2){
-			       					echo '<thead><tr><th scope="col">Staff#</th><th scope="col">First Name</th><th scope="col">Last Name</th><th scope="col">Contact</th><th scope="col">Email</th><th scope="col">Assigned/On-Going/Completed</th><th scope="col">Completion Rate</th><th scope="col">Overtime hour</th><th scope="col">Overtime Pay</th></tr></thead><tbody>';
-			       				}
+								echo '<thead><tr><th scope="col" width="10%">Request#</th><th scope="col">Subject</th><th scope="col">Company</th><th scope="col">Rating</th><th scope="col">Comment</th><th scope="col">IT Technician</th><th scope="col">Reviewed Date</th></tr></thead><tbody>';
+			       					
 
-			       				foreach ($staffs as $staff) {
-			       					if($staff["assigned"] != 0){
-			       						$progress = $staff["assigned"]."/".$staff["ongoing"]."/".$staff["completed"];
-			       						$comRate = number_format($staff["completed"]/$staff["assigned"]*100, 2, '.', '') . "%";
-			       						if($staff["completed"]/$staff["assigned"]*100 < 40){
-				       						$comRate .= "<img title='Low Performance Alert' style='height: 25px;padding-left: 5px;vertical-align: bottom;' src=\"https://static.ariste.info/wp-content/uploads/2020/04/1200px-Antu_dialog-warning.svg_-1.png\">";
-				       					}
-			       					}else{
-			       						$progress = "0/0/0";
-			       						$comRate = number_format(0, 2, '.', '') . "%";
-			       					}
-			       					
-			       					
-				       				echo '<tr><td>'.$staff["sid"].'</td><td>'.$staff["fname"].'</td><td>'.$staff["lname"].'</td><td>'.$staff["contact"].'</td><td>'.$staff["email"].'</td><td>'.$progress.'</td><td>'.$comRate.'</td><td>'.gmdate("H:i:s", $staff["overtime"]).'</td><td>RM '.number_format(($staff["overtime"]*0.0055556), 2, '.', '').'</td></tr>';
+			       				foreach ($filterResult as $req) {
+			       					$status = "";
+			       					$assignBtn = "";
+			       					if($req["status"] == 1) $status = "New";
+			       					else if($req["status"] == 2) $status = "Assigned";
+			       					else if($req["status"] == 3) $status = "On-Going";
+			       					else if($req["status"] == 4) $status = "Pending";
+			       					else if($req["status"] == 5) $status = "Completed";
+			       					else if($req["status"] == 6) $status = "Reviewed";
+
+			       					$rating = "";
+			       					for($i = 1; $i <= 5; $i++){
+				                      if($i <= $req["review"]){
+				                        $rating .= '<div class="star active"></div>';
+				                      }else{
+				                        $rating .= '<div class="star"></div>';
+				                      }
+				                    }
+
+				       				echo '<tr><td><a class="view" title="View Request" href="viewRequest.php?v='.$req["rid"].'">'.$req["rid"].'</a></td><td class="text-truncate" style="max-width: 200px;">'.$req["subject"].'</td><td>'.$req["createdBy"].'</td><td><div title="'.$req["review"].' star(s)" class="stars">'.$rating.'</div></td><td class="text-truncate" style="max-width: 280px;">'.$req["comment"].'</td><td>'.$req["assignedTo"].'</td><td>'.$req["reviewedDate"].'</td></tr>';
+
 				       			}
 
 				       			echo '</tbody></table>';
@@ -205,11 +161,12 @@
 	<script type="text/javascript" src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 	<!-- Google Chart API JS -->
   	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-  	<script type="text/javascript" src="../assets/js/sha256.js"></script>
+
 	<script type="text/javascript">
 		$("#footer").load("../assets/snippet/footer.html");
-		var position = <?php echo $userObj->getPermissionID() ?>;
+
 		var uid = <?php echo '"'. $userObj->getData()["id"] .'"' ?>;
+		var position = <?php echo '"'. $userObj->getPermissionID() .'"' ?>;
 
 		//connect to socket
 		var sock = new WebSocket("ws://localhost:55000");
@@ -291,30 +248,43 @@
 		$(document).ready(()=>{
 			getNotification();
 			$('.loading-wrapper').addClass('hide');
-			if(position == 2 || position == 1){
-				$("#addStaffBtn").click(()=>{
+			var rid = "";
+			$(".assignBtn").click((event)=>{
+				rid = event.currentTarget.getAttribute( "data-rid" );
+				$.ajax({
+		          type: "POST",
+		          dataType: "json",
+		          url: "../assets/php/classes/run.php?a=getStaffList", 
+		          success: function(data) {
+		            $("#staff_sel")[0].innerHTML = '<option value="0">Select a staff</option>';
+		            data[1].forEach((staff)=>{
+		            	$("#staff_sel").append('<option value="'+staff["sid"]+'">'+staff["name"]+' (' + staff["freq"] + ')</option>');
+		            });
+		          }
+		      	});
+			});
+
+			$("#assignCom").click(()=>{
+				if($("#staff_sel").val() != 0){
 					$.ajax({
-		              type: "POST",
-		              dataType: "json",
-		              url: "../assets/php/classes/run.php?a=addStaff", 
-		              data: {
-		                rid: $("#sid").val(),
-						fname: $("#fname").val(),
-						lname: $("#lname").val(),
-						contact: $("#contact").val(),
-						email: $("#email").val(),
-						pass: sha256($("#pass").val()),
-						pos: $("#position").val()
-		              },
-		              success: function(data) {
-		                if(data[0] == true){
-		                	location.reload();
-		                }
-		              }
-		          });
-				});
-			}
+			          type: "POST",
+			          dataType: "json",
+			          url: "../assets/php/classes/run.php?a=assignStaff",
+			          data:{
+			          	sid: $("#staff_sel").val(),
+			          	rid: rid
+			          },
+			          success: function(data) {
+			            if(data[0] == true){
+			            	location.reload();
+			            }
+
+			          }
+			      	});
+				}
+			});
 		});
+		
 	</script>
 </body>
 </html>

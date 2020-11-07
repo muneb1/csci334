@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 05, 2020 at 10:53 PM
+-- Generation Time: Nov 07, 2020 at 02:05 PM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.4
 
@@ -42,9 +42,15 @@ INSERT INTO `assignhistory` (`rid`, `sid`) VALUES
 ('20201031877', 'dexter'),
 ('20201103008', 'weihan'),
 ('20201104626', 'dexter'),
+('20201104949', 'vanessa'),
 ('20201106127', 'vanessa'),
 ('20201106520', 'vanessa'),
-('20201106768', 'vanessa');
+('20201106768', 'vanessa'),
+('20201107286', 'dexter'),
+('20201107603', 'weihan'),
+('20201107636', 'dexter'),
+('20201107807', 'dexter'),
+('20201107807', 'vanessa');
 
 -- --------------------------------------------------------
 
@@ -106,11 +112,32 @@ INSERT INTO `credential` (`uid`, `u_email`, `u_pass`, `last_login`, `user_group`
 --
 
 CREATE TABLE `notification` (
-  `uid` varchar(20) NOT NULL,
+  `nid` varchar(30) NOT NULL,
+  `uid` varchar(20) DEFAULT NULL,
+  `pos` int(1) DEFAULT NULL,
   `created_time` datetime NOT NULL DEFAULT current_timestamp(),
+  `title` varchar(255) NOT NULL,
   `content` varchar(255) NOT NULL,
   `status` int(1) NOT NULL DEFAULT 0 COMMENT '0-unread, 1-read'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `notification`
+--
+
+INSERT INTO `notification` (`nid`, `uid`, `pos`, `created_time`, `title`, `content`, `status`) VALUES
+('20201104949Vanessa', NULL, 2, '2020-11-07 18:13:44', 'Request Overdue', 'Request (20201104949) that assigned to Vanessa is overdued, reassign if necessary', 0),
+('20201107286assign', 'dexter', NULL, '2020-11-07 19:56:29', 'New Request', 'Request (20201107286) assigned to you', 1),
+('20201107286create', NULL, 2, '2020-11-07 19:56:01', 'New Request', 'Apple Inc submit a new request', 1),
+('20201107603WeiHan', NULL, 2, '2020-11-07 18:13:44', 'Request Overdue', 'Request (20201107603) that assigned to Wei Han is overdued, reassign if necessary', 0),
+('20201107636assign', 'dexter', NULL, '2020-11-07 19:10:45', 'New Request', 'Request (20201107636) assigned to you', 1),
+('20201107636create', NULL, 2, '2020-11-07 18:23:53', 'New Request', 'Addidas submit a new request', 1),
+('20201107807complete', NULL, 2, '2020-11-07 18:43:24', 'Request Completed', 'Request (20201107807) completed by Dexter', 1),
+('20201107807Dexter', NULL, 2, '2020-11-07 18:13:44', 'Request Overdue', 'Request (20201107807) that assigned to Dexter is overdued, reassign if necessary', 0),
+('asd', 'brandon', NULL, '2020-11-07 16:14:14', 'Subject', 'Even the top rated comment here, Sergio Abreu\'s', 1),
+('ga', 'brandon', NULL, '2020-11-07 16:14:14', 'Test', 'If you want to find out the number of days between two dates', 1),
+('hello', 'brandon', NULL, '2020-11-07 15:06:31', 'Test Title', 'test', 1),
+('test1', 'brandon', NULL, '2020-11-07 16:03:54', 'Unread Test', 'unread\r\n', 1);
 
 -- --------------------------------------------------------
 
@@ -132,7 +159,6 @@ CREATE TABLE `replies` (
 INSERT INTO `replies` (`request_id`, `content`, `created_by`, `created_time`) VALUES
 ('20201031441', 'We have received you request, an IT technician will be assigned to help you soon.', NULL, '2020-11-03 16:04:39'),
 ('20201031441', 'Aman had assigned to help you\r\n', NULL, '2020-11-03 16:15:42'),
-('20201031441', 'Updated', NULL, '2020-11-05 10:25:03'),
 ('20201031877', 'We have received you request, an IT technician will be assigned to help you soon.', NULL, '2020-11-03 16:04:39'),
 ('20201031877', 'Dexter had assigned to help you', NULL, '2020-11-04 18:01:27'),
 ('20201031877', 'Test', 'dexter', '2020-11-04 18:45:27'),
@@ -151,6 +177,7 @@ INSERT INTO `replies` (`request_id`, `content`, `created_by`, `created_time`) VA
 ('20201104626', 'Dexter had assigned to help you', NULL, '2020-11-05 13:38:04'),
 ('20201104626', 'Reply', 'dexter', '2020-11-05 18:57:53'),
 ('20201104949', 'We have received you request, an IT technician will be assigned to help you soon.', NULL, '2020-11-03 16:50:42'),
+('20201104949', 'Vanessa had assigned to help you', NULL, '2020-11-07 09:04:36'),
 ('20201106127', 'We have received you request, an IT technician will be assigned to help you soon.', NULL, '2020-11-05 20:53:10'),
 ('20201106127', 'Vanessa had assigned to help you', NULL, '2020-11-05 20:53:28'),
 ('20201106127', 'Hi what can I help you', 'vanessa', '2020-11-05 20:54:37'),
@@ -163,7 +190,21 @@ INSERT INTO `replies` (`request_id`, `content`, `created_by`, `created_time`) VA
 ('20201106768', 'We have received you request, an IT technician will be assigned to help you soon.', NULL, '2020-11-05 21:39:15'),
 ('20201106768', 'Vanessa had assigned to help you', NULL, '2020-11-05 21:39:47'),
 ('20201106768', 'Hello', 'vanessa', '2020-11-05 21:39:57'),
-('20201106768', 'Hello', 'james', '2020-11-05 21:40:10');
+('20201106768', 'Hello', 'james', '2020-11-05 21:40:10'),
+('20201107286', 'We have received you request, an IT technician will be assigned to help you soon.', NULL, '2020-11-07 11:56:01'),
+('20201107286', 'Dexter had assigned to help you', NULL, '2020-11-07 11:56:29'),
+('20201107286', 'hello', 'dexter', '2020-11-07 11:57:28'),
+('20201107286', 'hello', 'alex', '2020-11-07 11:58:07'),
+('20201107286', 'Good to see you', 'dexter', '2020-11-07 11:58:18'),
+('20201107286', 'hi', 'dexter', '2020-11-07 11:58:49'),
+('20201107286', 'haha', 'alex', '2020-11-07 11:58:52'),
+('20201107603', 'We have received you request, an IT technician will be assigned to help you soon.', NULL, '2020-11-07 06:55:03'),
+('20201107603', 'Wei Han had assigned to help you', NULL, '2020-11-07 09:04:34'),
+('20201107636', 'We have received you request, an IT technician will be assigned to help you soon.', NULL, '2020-11-07 10:23:53'),
+('20201107636', 'Dexter had assigned to help you', NULL, '2020-11-07 11:10:45'),
+('20201107807', 'We have received you request, an IT technician will be assigned to help you soon.', NULL, '2020-11-06 19:30:07'),
+('20201107807', 'Vanessa had assigned to help you', NULL, '2020-11-06 19:31:04'),
+('20201107807', 'Dexter had assigned to help you', NULL, '2020-11-06 19:48:25');
 
 -- --------------------------------------------------------
 
@@ -194,22 +235,20 @@ CREATE TABLE `request` (
 INSERT INTO `request` (`rid`, `r_title`, `r_content`, `created_by`, `created_time`, `assigned_time`, `assigned_to`, `completed_time`, `review`, `comment`, `reviewed_time`, `updated_time`, `status`) VALUES
 ('20201031441', 'tes', 'test', 'alex', '2020-10-31 08:50:19', '2020-11-03 16:14:40', 'dexter', '2020-11-06 03:35:26', NULL, NULL, NULL, '2020-11-06 03:35:26', 5),
 ('20201031877', 'tes', 'test', 'alex', '2020-10-31 08:50:27', '2020-11-04 18:02:05', 'dexter', '2020-11-06 03:38:43', NULL, NULL, NULL, '2020-11-06 03:38:43', 5),
-('20201103008', 'Hardware', 'Description', 'alex', '2020-11-03 12:40:01', '2020-11-03 16:45:43', 'weihan', '2020-11-04 00:45:50', NULL, NULL, NULL, '0000-00-00 00:00:00', 4),
+('20201103008', 'Hardware', 'Description', 'alex', '2020-11-03 07:02:31', '2020-11-03 16:45:43', 'weihan', '2020-11-04 00:45:50', NULL, NULL, NULL, '2020-11-07 15:04:47', 5),
 ('20201104626', 'Testing 2', 'Testing 2', 'alex', '2020-11-03 16:52:18', '2020-11-05 13:38:04', 'dexter', '2020-11-06 03:36:16', NULL, NULL, NULL, '2020-11-06 03:36:16', 5),
-('20201104949', 'Testing', 'Testing', 'alex', '2020-11-03 16:50:42', NULL, NULL, NULL, NULL, NULL, NULL, '0000-00-00 00:00:00', 1),
-('20201106127', 'Hardware problem', 'My computer back screen', 'james', '2020-11-05 20:53:10', '2020-11-05 20:53:28', 'vanessa', '2020-11-06 05:02:04', 4, 'Good Service', '2020-11-05 21:27:32', '2020-11-06 05:27:32', 6),
-('20201106520', 'Have Request Again', 'Why you closed the ticket?', 'james', '2020-11-05 21:44:25', '2020-11-05 21:44:48', 'vanessa', '2020-11-06 05:46:01', 1, 'Again', '2020-11-05 21:48:08', '2020-11-06 05:48:08', 6),
-('20201106768', 'Another New Request', 'I Have Problem', 'james', '2020-11-05 21:39:15', '2020-11-05 21:39:47', 'vanessa', '2020-11-06 05:40:15', 3, 'No Good', '2020-11-05 21:40:27', '2020-11-06 05:40:27', 6);
+('20201104949', 'Testing', 'Testing', 'alex', '2020-11-03 16:50:42', '2020-10-29 09:04:36', 'vanessa', NULL, NULL, NULL, NULL, '2020-11-07 17:05:36', 2),
+('20201106127', 'Hardware problem', 'My computer back screen', 'james', '2020-11-05 20:53:10', '2020-11-05 20:53:28', 'vanessa', '2020-11-06 05:02:04', 4, 'Good Service', '2020-11-05 21:27:32', '2020-11-07 04:57:43', 6),
+('20201106520', 'Have Request Again', 'Why you closed the ticket?', 'james', '2020-11-05 21:44:00', '2020-11-05 21:44:48', 'vanessa', '2020-11-06 05:46:00', 1, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', '2020-11-05 21:48:08', '2020-11-07 04:57:40', 6),
+('20201106768', 'Another New Request', 'I Have Problem', 'james', '2020-11-05 21:39:15', '2020-11-05 21:39:47', 'vanessa', '2020-11-06 05:40:15', 3, 'No Good', '2020-11-05 21:40:27', '2020-11-07 04:51:28', 6),
+('20201107286', 'Test Reply', 'reply automation', 'alex', '2020-11-07 11:56:01', '2020-11-07 11:56:29', 'dexter', NULL, NULL, NULL, NULL, '2020-11-07 20:01:19', 4),
+('20201107603', 'Request', 'Request content', 'james', '2020-11-07 06:55:03', '2020-10-30 09:04:34', 'weihan', NULL, NULL, NULL, NULL, '2020-11-07 17:05:31', 2),
+('20201107636', 'Test notification', 'check notification works or not', 'james', '2020-11-07 10:23:53', '2020-11-07 11:10:56', 'dexter', NULL, NULL, NULL, NULL, '2020-11-07 19:10:56', 2),
+('20201107807', 'Forget Password', 'I need to reset my password', 'james', '2020-10-30 06:30:07', '2020-10-30 19:48:24', 'dexter', '2020-11-07 18:43:24', NULL, NULL, NULL, '2020-11-07 18:43:24', 5);
 
 --
 -- Triggers `request`
 --
-DELIMITER $$
-CREATE TRIGGER `assigned_request` AFTER UPDATE ON `request` FOR EACH ROW IF OLD.assigned_to <> NEW.assigned_to THEN
-INSERT INTO `replies`(`request_id`, `content`, `created_by`, `created_time`) VALUES (OLD.rid,"Updated",NULL,CURRENT_TIMESTAMP);
-END IF
-$$
-DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `new_request` AFTER INSERT ON `request` FOR EACH ROW INSERT INTO `replies`(`request_id`, `content`, `created_by`, `created_time`) VALUES (NEW.rid,"We have received you request, an IT technician will be assigned to help you soon.",NULL,CURRENT_TIMESTAMP)
 $$
@@ -249,7 +288,42 @@ INSERT INTO `service_session` (`session_id`, `requestID`, `staff_id`, `startTime
 (59, '20201106768', 'vanessa', '2020-11-05 21:40:14', '2020-11-05 21:40:15'),
 (60, '20201106520', 'vanessa', '2020-11-05 21:45:41', NULL),
 (61, '20201106520', 'vanessa', '2020-11-05 21:45:41', '2020-11-05 21:46:00'),
-(62, '20201106520', 'vanessa', '2020-11-05 21:46:00', '2020-11-05 21:46:01');
+(62, '20201106520', 'vanessa', '2020-11-05 21:46:00', '2020-11-05 21:46:01'),
+(63, '20201107807', 'vanessa', '2020-11-06 19:31:09', NULL),
+(64, '20201107807', 'vanessa', '2020-11-06 19:31:10', '2020-11-06 19:34:56'),
+(65, '20201107807', 'dexter', '2020-11-07 06:32:25', NULL),
+(66, '20201107807', 'dexter', '2020-11-07 06:32:26', '2020-11-07 10:31:45'),
+(67, '20201107807', 'dexter', '2020-11-07 10:31:48', '2020-11-07 10:33:07'),
+(68, '20201107807', 'dexter', '2020-11-07 10:33:07', '2020-11-07 10:33:08'),
+(69, '20201107807', 'dexter', '2020-11-07 10:33:09', '2020-11-07 10:33:10'),
+(70, '20201107807', 'dexter', '2020-11-07 10:33:10', '2020-11-07 10:33:42'),
+(71, '20201107807', 'dexter', '2020-11-07 10:33:43', '2020-11-07 10:33:44'),
+(72, '20201107807', 'dexter', '2020-11-07 10:33:45', '2020-11-07 10:34:41'),
+(73, '20201107807', 'dexter', '2020-11-07 10:34:41', '2020-11-07 10:35:05'),
+(74, '20201107807', 'dexter', '2020-11-07 10:35:05', '2020-11-07 10:35:09'),
+(75, '20201107807', 'dexter', '2020-11-07 10:35:11', '2020-11-07 10:36:42'),
+(76, '20201107807', 'dexter', '2020-11-07 10:36:44', '2020-11-07 10:36:45'),
+(77, '20201107807', 'dexter', '2020-11-07 10:36:46', '2020-11-07 10:36:52'),
+(78, '20201107807', 'dexter', '2020-11-07 10:36:53', '2020-11-07 10:37:13'),
+(79, '20201107807', 'dexter', '2020-11-07 10:37:13', '2020-11-07 10:37:15'),
+(80, '20201107807', 'dexter', '2020-11-07 10:37:16', '2020-11-07 10:37:43'),
+(81, '20201107807', 'dexter', '2020-11-07 10:37:45', '2020-11-07 10:37:46'),
+(82, '20201107807', 'dexter', '2020-11-07 10:37:46', '2020-11-07 10:38:14'),
+(83, '20201107807', 'dexter', '2020-11-07 10:38:15', '2020-11-07 10:38:38'),
+(84, '20201107807', 'dexter', '2020-11-07 10:38:38', '2020-11-07 10:40:04'),
+(85, '20201107807', 'dexter', '2020-11-07 10:40:04', '2020-11-07 10:40:34'),
+(86, '20201107807', 'dexter', '2020-11-07 10:40:34', '2020-11-07 10:40:36'),
+(87, '20201107807', 'dexter', '2020-11-07 10:40:36', '2020-11-07 10:40:38'),
+(88, '20201107807', 'dexter', '2020-11-07 10:42:10', '2020-11-07 10:42:41'),
+(89, '20201107807', 'dexter', '2020-11-07 10:42:42', '2020-11-07 10:42:43'),
+(90, '20201107807', 'dexter', '2020-11-07 10:42:43', '2020-11-07 10:42:44'),
+(91, '20201107807', 'dexter', '2020-11-07 10:42:44', '2020-11-07 10:43:23'),
+(92, '20201107807', 'dexter', '2020-11-07 10:43:24', '2020-11-07 10:43:24'),
+(93, '20201107286', 'dexter', '2020-11-07 11:56:39', NULL),
+(94, '20201107286', 'dexter', '2020-11-07 11:56:39', '2020-11-07 11:57:42'),
+(95, '20201107286', 'dexter', '2020-11-07 11:57:42', '2020-11-07 11:57:55'),
+(96, '20201107286', 'dexter', '2020-11-07 11:57:55', '2020-11-07 12:01:17'),
+(97, '20201107286', 'dexter', '2020-11-07 12:01:17', '2020-11-07 12:01:19');
 
 -- --------------------------------------------------------
 
@@ -305,7 +379,8 @@ ALTER TABLE `credential`
 -- Indexes for table `notification`
 --
 ALTER TABLE `notification`
-  ADD PRIMARY KEY (`uid`,`created_time`) USING BTREE;
+  ADD PRIMARY KEY (`nid`),
+  ADD KEY `uid_noti_FK` (`uid`);
 
 --
 -- Indexes for table `replies`
@@ -344,7 +419,7 @@ ALTER TABLE `staff`
 -- AUTO_INCREMENT for table `service_session`
 --
 ALTER TABLE `service_session`
-  MODIFY `session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
 
 --
 -- Constraints for dumped tables
@@ -367,7 +442,8 @@ ALTER TABLE `client`
 -- Constraints for table `notification`
 --
 ALTER TABLE `notification`
-  ADD CONSTRAINT `uid_FK` FOREIGN KEY (`uid`) REFERENCES `credential` (`uid`);
+  ADD CONSTRAINT `uid_FK` FOREIGN KEY (`uid`) REFERENCES `credential` (`uid`),
+  ADD CONSTRAINT `uid_noti_FK` FOREIGN KEY (`uid`) REFERENCES `credential` (`uid`);
 
 --
 -- Constraints for table `replies`

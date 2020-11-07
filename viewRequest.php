@@ -72,7 +72,7 @@
               <li><a type="button" data-toggle="modal" data-target="#newResquest">New Request</a></li>
               <li><a href="requestHistory.php">Request History</a></li>
               <li><a href="#">Account</a></li>
-              <li class="logout"><a href="assets/php/logout.php">Logout</a></li>
+              <li class="logout"><a href="assets/php/classes/run.php?a=logout">Logout</a></li>
             </ul>
           </li>';
              require_once "assets/php/classes/build.php";
@@ -317,6 +317,36 @@
     var uid = <?php echo '"'.$userObj->getData()["id"].'"'?>;
     var status = <?php echo $data->{"status"} ?>;
 
+    //connect to socket
+    var sock = new WebSocket("ws://localhost:55000");
+    var userList = [];
+    sock.onopen = function(event){
+      sock.send('{"action":"open", "uid":"'+ uid +'"}');  
+    };
+
+    sock.onmessage = function(event){
+      const jsonData = JSON.parse(event.data);
+      if(jsonData.action == "notifyAll" || jsonData.action == "notify"){
+        if(jsonData.msg == "reply"){
+          getReply(rid);
+        }
+      }else if(jsonData.action == "list"){
+        const clients = (jsonData.msg).split(",");
+        clients.forEach((key)=>{
+          userList.push(key);
+        });
+      }
+      
+    };
+
+    sock.onerror = function(error){
+      console.log("Can't connect to server");
+    }
+
+    $(window).on("unload", function(e) {
+        sock.close(1000,'{"uid":"'+ uid +'"}');
+    });
+
     $(".close-modal").click(()=>{
       location.href = "requestHistory.php";
     });
@@ -392,6 +422,7 @@
                 if(data[0] == true){
                   getReply(rid);
                   $("#replyContent").val("");
+                  sock.send('{"action":"reply"}');
                 }
               }
           });
@@ -427,6 +458,7 @@
               tempStr += '</div><span>'+reply["createdTime"]+'</span></div>';
               $("#replies").append(tempStr);
             });
+            $("#replies").animate({ scrollTop: $("#replies")[0].scrollHeight}, 500);
           }
       });
     }

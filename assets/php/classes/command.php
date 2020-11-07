@@ -187,6 +187,8 @@
 				$this->sql = 'SELECT * FROM `request` LEFT JOIN `staff` on `request`.`assigned_to` = `staff`.`sid` LEFT JOIN `client` on `client`.`cid` = `request`.`created_by` WHERE status = 5' . $filter . ' ORDER BY updated_time DESC';
 			}else if($param[0] == "reviewed"){
 				$this->sql = 'SELECT * FROM `request` LEFT JOIN `staff` on `request`.`assigned_to` = `staff`.`sid` LEFT JOIN `client` on `client`.`cid` = `request`.`created_by` WHERE status = 6' . $filter . ' ORDER BY updated_time DESC';
+			}else if($param[0] == "overdue"){
+				$this->sql = 'SELECT * FROM `request` LEFT JOIN `staff` on `request`.`assigned_to` = `staff`.`sid` LEFT JOIN `client` on `client`.`cid` = `request`.`created_by` WHERE status >= 2 AND status <= 4' . $filter . ' ORDER BY updated_time DESC';
 			}
 			
 		}
@@ -503,10 +505,9 @@
 
 		public function setParam($param){
 			$status = 1;
-			$position = 3;
 			$group = 0;
 			($this->stmt)->bind_param("sssii", $param[0], $param[4], $param[5], $group, $status);
-			($this->sstmt)->bind_param("ssssii", $param[0], $param[1], $param[2], $param[3], $position, $status);
+			($this->sstmt)->bind_param("ssssii", $param[0], $param[1], $param[2], $param[3], $param[6], $status);
 		}
 
 		public function execute(){
@@ -699,6 +700,210 @@
 
 		public function setParam($param){
 			($this->stmt)->bind_param("isss", $param[0], $param[1], $param[2], $param[3]);
+			
+		}
+
+		public function execute(){
+			($this->stmt)->execute();
+
+			if(($this->stmt)->affected_rows == 1){
+				($this->stmt)->close();
+				return true;
+			}else{
+				($this->stmt)->close();
+				return false;
+			}
+		}
+	}
+
+	class getSummary implements Command{
+		private $sql;
+		private $db;
+		private $status;
+
+		public function __construct($mysqli){
+			$this->sql = "";
+			$this->db = $mysqli;
+		}
+
+		public function setParam($param){
+			$this->status = $param[0];
+			if($param[0] == "new"){
+				$this->sql = 'SELECT COALESCE(COUNT(rid),0) as count FROM `request` WHERE status = 1';
+			}else if($param[0] == "ongoing"){
+				$this->sql = 'SELECT COALESCE(COUNT(rid),0) as count FROM `request` WHERE status >= 2 AND status <= 4';
+			}else if($param[0] == "completed"){
+				$this->sql = 'SELECT COALESCE(COUNT(rid),0) as count FROM `request` WHERE status >= 5 AND status <= 6';
+			}else if($param[0] == "avgTime"){
+				$this->sql = 'SELECT rid,TIMESTAMPDIFF(second,created_time, completed_time) AS diff FROM `request` WHERE completed_time is not NULL';
+			}
+			
+		}
+
+		public function execute(){
+			$result = ($this->db)->query($this->sql);
+			$result_arr = array();
+			if ($result->num_rows == 1 && $this->status != "avgTime") {
+				while($row = $result->fetch_assoc()) {
+					array_push($result_arr, array(
+						"status"=>$this->status,
+						"count"=>$row["count"]
+					));
+				}
+			}else if($result->num_rows >= 1 && $this->status == "avgTime"){
+				$total = 0;
+				while($row = $result->fetch_assoc()) {
+					$total += (int) $row["diff"];
+				}
+				$total /= $result->num_rows;
+				array_push($result_arr, array(
+					"status"=>$this->status,
+					"count"=> $this->secToHR(floor($total))
+				));
+			}
+			return $result_arr;
+		}
+
+		private function secToHR($seconds) {
+		  $hours = floor($seconds / 3600);
+		  $minutes = floor(($seconds / 60) % 60);
+		  if($hours > 1){
+		  	$hours = $hours . " hours";
+		  }else if($hours <= 0){
+		  	$hours = "";
+		  }else{
+		  	$hours = $hours . " hour";
+		  }
+		  if($minutes > 1){
+		  	$minutes = $minutes . " minutes";
+		  }else{
+		  	$minutes = $minutes . " minute";
+		  }
+			return $hours . " " . $minutes;
+		}
+	}
+
+	class getNotification implements Command{
+		private $sql;
+		private $db;
+
+		public function __construct($mysqli){
+			$this->sql = "";
+			$this->db = $mysqli;
+		}
+
+		public function setParam($param){
+			$this->sql = 'SELECT * FROM `notification` WHERE `uid` = "'.$param[0].'" OR `pos` = "'.$param[1].'" ORDER BY `status`, `created_time` DESC';
+		}
+
+		public function execute(){
+			$result = ($this->db)->query($this->sql);
+			$result_arr = array();
+			$unread = 0;
+			if ($result->num_rows >= 1) {
+				while($row = $result->fetch_assoc()) {
+					$cdate = strtotime($row["created_time"]);
+					$curDate = strtotime(date("y-m-d H:i:s"));
+					$dur = "";
+					if($curDate - $cdate <= 5){
+						$dur = "Now";
+					}else if($curDate - $cdate <= 60){
+						$dur = $curDate - $cdate . " sec ago";
+					}else if($curDate - $cdate <= 86400){
+						$dur = $this->getMinutes($curDate - $cdate);
+					}else{
+						$dur = $this->getDays($curDate - $cdate);
+					}
+
+					if($row["status"] == 0){
+						$unread += 1;
+					}
+
+					array_push($result_arr, array(
+						"nid"=>$row["nid"],
+						"title"=>$row["title"],
+						"content"=>$row["content"],
+						"date"=>$dur,
+						"read"=>$row["status"]
+					));
+				}
+			}else{
+				return json_encode(  array("0"=> false));
+			}
+			return json_encode( array("0"=> true, "1"=>$result_arr, "2"=>$unread));
+		}
+
+		private function getMinutes($seconds){
+			$hours = floor($seconds / 3600);
+		  $minutes = floor(($seconds / 60) % 60);
+		  if($hours > 1){
+		  	$hours = $hours . " hrs";
+		  }else if($hours <= 0){
+		  	$hours = "";
+		  }else{
+		  	$hours = $hours . " hr";
+		  }
+		  if($minutes > 1){
+		  	$minutes = $minutes . " mins";
+		  }else{
+		  	$minutes = $minutes . " min";
+		  }
+			return $hours . " " . $minutes . " ago";
+		}
+
+		private function getDays($second){
+			return floor($second/86400) . "day(s) ago";
+		}
+	}
+
+	class readNotification implements Command{
+		private $sql;
+		private $db;
+		private $stmt;
+
+		public function __construct($mysqli){
+			$this->db = $mysqli;
+			$this->stmt = ($this->db)->prepare('UPDATE `notification` SET `status`= 1 WHERE `nid` = ?');
+		}
+
+		public function setParam($param){
+			($this->stmt)->bind_param("s", $param[0]);
+			
+		}
+
+		public function execute(){
+			($this->stmt)->execute();
+
+			if(($this->stmt)->affected_rows == 1){
+				($this->stmt)->close();
+				return true;
+			}else{
+				($this->stmt)->close();
+				return false;
+			}
+		}
+	}
+
+	class createNotification implements Command{
+		private $sql;
+		private $db;
+		private $stmt;
+
+		public function __construct($mysqli){
+			$this->db = $mysqli;
+			
+		}
+
+		public function setParam($param){
+			if(sizeof($param) == 5){
+				$this->stmt = ($this->db)->prepare('INSERT INTO `notification`(`nid`, `uid`, `pos`, `title`, `content`) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE `status` = 0');
+				($this->stmt)->bind_param("ssiss", $param[0],$param[1],$param[2],$param[3],$param[4]);
+			}else{
+				$this->stmt = ($this->db)->prepare('INSERT INTO `notification`(`nid`, `uid`, `pos`, `title`, `content`) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE `status` = 0, `created_time` = ?');
+				$today = date("y-m-d H:i:s");
+				($this->stmt)->bind_param("ssiss", $param[0],$param[1],$param[2],$param[3],$param[4],$today);
+			}
+			
 			
 		}
 

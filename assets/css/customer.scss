@@ -18,3 +18,21 @@
 		}
 	}
 }
+
+.stars{
+	width: 120px;
+	padding: 0;
+	display: flex;
+	justify-content: space-between;
+
+	div{
+		width: 18px;
+		height: 18px;
+		background: url(http://localhost/csci334/assets/img/star_.png) no-repeat center 0px;
+		background-size: 18px 18px;
+		&.active{
+			background: url(http://localhost/csci334/assets/img/star.png);
+			background-size: 18px 18px;
+		}
+	}
+}

@@ -37,12 +37,29 @@
 				$title = $_POST["subject"];
 				$content = $_POST["content"];
 				$cTime = date("Y-m-d H:i:s");
+				$rid = generateKey(3);
 
-				$param = array(generateKey(3),$title,$content,$_SESSION["uid"],$cTime,1);
+				$param = array($rid,$title,$content,$_SESSION["uid"],$cTime,1);
 				
 				$create_fn = new createRequest(ADTECH::getDB());
 				$create_fn->setParam($param);
-				echo $create_fn->execute();
+				$result = $create_fn->execute();
+				echo $result;
+
+				$getClient = new getUser(ADTECH::getDB());
+				$param_temp = array(1,$_SESSION["uid"]);
+				$getClient->setParam($param_temp);
+				$clientDetails = $getClient->execute();
+
+				if(sizeof($clientDetails) > 0){
+					//create notification
+					$createNoti = new createNotification(ADTECH::getDB());
+					$nofi_param = array($rid."create",null,2,"New Request",$clientDetails[0]['company']." submit a new request");
+					$createNoti->setParam($nofi_param);
+					$createNoti->execute();
+				}
+
+				
 			}else{
 				echo false;
 			}
@@ -66,6 +83,7 @@
 		case "assignStaff":
 			$sid = $_POST["sid"];
 			$rid = $_POST["rid"];
+
 			$aTime = date("Y-m-d H:i:s");
 			$assign = new assignStaff(ADTECH::getDB());
 			$param = array($aTime,$sid, $rid);
@@ -83,6 +101,12 @@
 				$reply_param = array($rid,$content,NULL);
 				$addReply->setParam($reply_param);
 				echo $addReply->execute();
+
+				//create notification
+				$createNoti = new createNotification(ADTECH::getDB());
+				$nofi_param = array($rid."assign",$sid,null,"New Request","Request (".$rid.") assigned to you");
+				$createNoti->setParam($nofi_param);
+				$createNoti->execute();
 			}else{
 				echo json_encode( (object) array("0"=> false));
 			}
@@ -148,6 +172,19 @@
 			$param = array($cTime,$rid);
 			$comStatus->setParam($param);
 			echo $comStatus->execute();
+
+			$getReq = new getRequest(ADTECH::getDB());
+			$param_temp = array("",$rid);
+			$getReq->setParam($param_temp);
+			$reqDatails = $getReq->execute();
+
+			$reqData = json_decode($reqDatails)->{"1"}[0];
+
+			//create notification
+			$createNoti = new createNotification(ADTECH::getDB());
+			$nofi_param = array($rid."complete",null,2,"Request Completed","Request (".$reqData->{"rid"}.") completed by ".$reqData->{"assignedTo"});
+			$createNoti->setParam($nofi_param);
+			$createNoti->execute();
 			break;
 		case "addStaff":
 			$rid = $_POST["rid"];
@@ -156,9 +193,10 @@
 			$contact = $_POST["contact"];
 			$email = $_POST["email"];
 			$pass = $_POST["pass"];
+			$pos = $_POST["pos"];
 
 			$addStaff = new addStaff(ADTECH::getDB());
-			$param = array($rid,$fname,$lname,$contact,$email,$pass);
+			$param = array($rid,$fname,$lname,$contact,$email,$pass,$pos);
 			$addStaff->setParam($param);
 			echo $addStaff->execute();
 			break;
@@ -172,6 +210,35 @@
 			$param = array($star,$comment,$rTime,$rid);
 			$submitReview->setParam($param);
 			echo $submitReview->execute();
+			break;
+		case "getStaffDetails":
+			$getDetails = new getStaffDetails(ADTECH::getDB());
+			echo json_encode($getDetails->execute()) ;
+			break;
+		case "reviewedRequset":
+			$status = $_POST["status"];
+			$filterReq = new filterRequest(ADTECH::getDB());
+			$param = array($status);
+			$filterReq->setParam($param);
+			echo json_encode($filterReq->execute()) ;
+			break;
+		case "getNotification":
+			$getNoti = new getNotification(ADTECH::getDB());
+			$param = array($_POST["uid"],$_POST["pos"]);
+			$getNoti->setParam($param);
+			echo $getNoti->execute();
+			break;
+		case "readNoti":
+			$readNoti = new readNotification(ADTECH::getDB());
+			$param = array($_POST["nid"]);
+			$readNoti->setParam($param);
+			echo $readNoti->execute();
+			break;
+		case "createNoti":
+			$createNoti = new readNotification(ADTECH::getDB());
+			$param = array($_POST["nid"],$_POST["uid"],$_POST["pos"],$_POST["title"],$_POST["content"]);
+			$createNoti->setParam($param);
+			echo $createNoti->execute();
 			break;
 		case "test":
 			$overtimeCal = new getOverTime(ADTECH::getDB());

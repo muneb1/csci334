@@ -72,7 +72,7 @@
               <li><a type="button" data-toggle="modal" data-target="#newResquest">New Request</a></li>
               <li><a href="requestHistory.php">Request History</a></li>
               <li><a href="#">Account</a></li>
-              <li class="logout"><a href="assets/php/logout.php">Logout</a></li>
+              <li class="logout"><a href="assets/php/classes/run.php?a=logout">Logout</a></li>
             </ul>
           </li>';
             }else{
@@ -236,6 +236,34 @@
   <script src="assets/js/sha256.js"></script>
   <script src="assets/js/main.js"></script>
   <script type="text/javascript">
+
+    //connect to socket
+    var sock = new WebSocket("ws://localhost:55000");
+    var userList = [];
+    sock.onopen = function(event){
+      sock.send('{"action":"open", "uid":"'+ uid +'"}');  
+    };
+
+    sock.onmessage = function(event){
+      const jsonData = JSON.parse(event.data);
+      if(jsonData.action == "notifyAll" || jsonData.action == "notify"){
+        console.log(jsonData);
+      }else if(jsonData.action == "list"){
+        const clients = (jsonData.msg).split(",");
+        clients.forEach((key)=>{
+          userList.push(key);
+        });
+      }
+      
+    };
+
+    sock.onerror = function(error){
+      console.log("Can't connect to server");
+    }
+
+    $(window).on("unload", function(e) {
+        sock.close(1000,'{"uid":"'+ uid +'"}');
+    });
 
     $(".close-modal").click(()=>{
       console.log("Tas");

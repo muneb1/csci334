@@ -17,7 +17,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Customer Reviews: Adtech IT Consultation</title>
+	<title>Customers Details: Adtech IT Consultation</title>
 
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
@@ -27,8 +27,44 @@
   	<link rel="stylesheet" type="text/css" href="../assets/vendor/bootstrap/css/bootstrap.min.css"></link>
   	<link rel="stylesheet" type="text/css" href="../assets/css/root.css"></link>
   	<link rel="stylesheet" type="text/css" href="../assets/css/customer.css"></link>
+  	<link rel="stylesheet" type="text/css" href="../assets/css/staff.css"></link>
 </head>
 <body>
+	<?php
+		if($userObj->getPermissionID() == 2 || $userObj->getPermissionID() == 1){
+			echo '<div class="modal fade" id="addCus" tabindex="-1" role="dialog" aria-labelledby="addStaff" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addStaffTitle">Add New Customer</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row no-gutters"><span class="col-2">Customer ID:</span>
+            	<input id="cid" class="col-3 form-control" type="text" placeholder="Enter Staff ID">
+            	<span class="col-3 pl-2">Person In Charge:</span>
+            	<input id="name" class="col-4 form-control" type="text" placeholder="Enter Name">
+            	<span class="col-2">Company Name:</span>
+            	<input id="company" class="col-10 form-control" type="text" placeholder="Company Name">
+            	<span class="col-2">Contact:</span>
+            	<input id="contact" class="col-10 form-control" type="text" placeholder="Enter Contact">
+            	<span class="col-2">Email:</span>
+            	<input id="email" class="col-10 form-control" type="text" placeholder="Enter Email">
+            	<span class="col-2">Password:</span>
+            	<input id="pass" class="col-10 form-control" type="password" placeholder="Enter Password">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-main" id="addCusBtn">Save</button>
+          </div>
+        </div>
+      </div>
+  </div>';
+		}
+	?>
 	<!-- Loading Page -->
 	<div class="loading-wrapper">
 		<div class="loading-title">
@@ -101,40 +137,29 @@
 			<div class="align-items-stretch content">
 				<!-- Main Content -->
 				<main class="p-4">
-					<h1 class="page-title">Customer Request</h1>
+					<div class="d-flex justify-content-between align-items-start">
+						<h1 class="page-title">Customers List</h1>
+						<?php
+							if($userObj->getPermissionID() == 2 || $userObj->getPermissionID() == 1){
+								echo '<button class="btn btn-main" id="addCus" type="button" data-toggle="modal" data-target="#addCus">Add Customer</button>';
+							}
+						?>
+						
+					</div>
+					
 					<div class="tablelist">
 			          <table class="table table-sm table-hover" id="record_table">
 			       		<?php
-			       			$rFilter = new filterRequest(ADTECH::getDB());
-			       			$param = array("reviewed");
-			       			$rFilter->setParam($param);
-			       			$filterResult = $rFilter->execute();
-			       			if(sizeof($filterResult) >= 1){
+			       			$cusList = new getCustomerDetails(ADTECH::getDB());
+			       			$customers = $cusList->execute();
+			       			if(sizeof($customers) >= 1){
 		       				
-								echo '<thead><tr><th scope="col" width="10%">Request#</th><th scope="col">Subject</th><th scope="col">Company</th><th scope="col">Rating</th><th scope="col">Comment</th><th scope="col">IT Technician</th><th scope="col">Reviewed Date</th></tr></thead><tbody>';
-			       					
+								if($userObj->getPermissionID() == 2 || $userObj->getPermissionID() == 1){
+			       					echo '<thead><tr><th scope="col">Customer#</th><th scope="col">Customer Name</th><th scope="col">Customer Company</th><th scope="col">Contact</th><th scope="col">Email</th><th scope="col">New</th><th scope="col">On-Going</th><th scope="col">Completed</th><th scope="col">Action</th></tr></thead><tbody>';
+			       				}
 
-			       				foreach ($filterResult as $req) {
-			       					$status = "";
-			       					$assignBtn = "";
-			       					if($req["status"] == 1) $status = "New";
-			       					else if($req["status"] == 2) $status = "Assigned";
-			       					else if($req["status"] == 3) $status = "On-Going";
-			       					else if($req["status"] == 4) $status = "Pending";
-			       					else if($req["status"] == 5) $status = "Completed";
-			       					else if($req["status"] == 6) $status = "Reviewed";
-
-			       					$rating = "";
-			       					for($i = 1; $i <= 5; $i++){
-				                      if($i <= $req["review"]){
-				                        $rating .= '<div class="star active"></div>';
-				                      }else{
-				                        $rating .= '<div class="star"></div>';
-				                      }
-				                    }
-
-				       				echo '<tr><td><a class="view" title="View Request" href="viewRequest.php?v='.$req["rid"].'">'.$req["rid"].'</a></td><td class="text-truncate" style="max-width: 200px;">'.$req["subject"].'</td><td>'.$req["createdBy"].'</td><td><div title="'.$req["review"].' star(s)" class="stars">'.$rating.'</div></td><td class="text-truncate" style="max-width: 280px;">'.$req["comment"].'</td><td>'.$req["assignedTo"].'</td><td>'.$req["reviewedDate"].'</td></tr>';
-
+			       				foreach ($customers as $customer) {			       					
+				       				echo '<tr><td>'.$customer["cid"].'</td><td>'.$customer["name"].'</td><td>'.$customer["company"].'</td><td>'.$customer["contact"].'</td><td>'.$customer["email"].'</td><td>'.$customer["new"].'</td><td>'.$customer["ongoing"].'</td><td>'.$customer["completed"].'</td><td><button class="btn-danger btn btn-sm delCus" data-cid="'.$customer["cid"].'">Delete</button></td></tr>';
 				       			}
 
 				       			echo '</tbody></table>';
@@ -160,12 +185,11 @@
 	<script type="text/javascript" src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 	<!-- Google Chart API JS -->
   	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
+  	<script type="text/javascript" src="../assets/js/sha256.js"></script>
 	<script type="text/javascript">
 		$("#footer").load("../assets/snippet/footer.html");
-
+		var position = <?php echo $userObj->getPermissionID() ?>;
 		var uid = <?php echo '"'. $userObj->getData()["id"] .'"' ?>;
-		var position = <?php echo '"'. $userObj->getPermissionID() .'"' ?>;
 
 		//connect to socket
 		var sock = new WebSocket("ws://localhost:55000");
@@ -252,24 +276,47 @@
 		$(document).ready(()=>{
 			getNotification();
 			$('.loading-wrapper').addClass('hide');
-			var rid = "";
-			$(".assignBtn").click((event)=>{
-				rid = event.currentTarget.getAttribute( "data-rid" );
-				$.ajax({
-		          type: "POST",
-		          dataType: "json",
-		          url: "../assets/php/classes/run.php?a=getStaffList", 
-		          success: function(data) {
-		            $("#staff_sel")[0].innerHTML = '<option value="0">Select a staff</option>';
-		            data[1].forEach((staff)=>{
-		            	$("#staff_sel").append('<option value="'+staff["sid"]+'">'+staff["name"]+' (' + staff["freq"] + ')</option>');
-		            });
-		          }
-		      	});
-			});
+			if(position == 2 || position == 1){
+				$("#addCusBtn").click(()=>{
+					$.ajax({
+		              type: "POST",
+		              dataType: "json",
+		              url: "../assets/php/classes/run.php?a=addCustomer", 
+		              data: {
+		                cid: $("#cid").val(),
+						name: $("#name").val(),
+						company: $("#company").val(),
+						contact: $("#contact").val(),
+						email: $("#email").val(),
+						pass: sha256($("#pass").val())
+		              },
+		              success: function(data) {
+		                if(data[0] == true){
+		                	location.reload();
+		                }
+		              }
+		          });
+				});
 
+				$(".delCus").click((event)=>{
+					if(confirm("Are you sure you want to delete customer with id: "+event.currentTarget.getAttribute("data-cid"))){
+						$.ajax({
+			              type: "POST",
+			              dataType: "json",
+			              url: "../assets/php/classes/run.php?a=deleteCustomer", 
+			              data: {
+			                cid: event.currentTarget.getAttribute("data-cid")
+			              },
+			              success: function(data) {
+			                if(data == true){
+			                	location.reload();
+			                }
+			              }
+			          });
+					}
+				});
+			}
 		});
-		
 	</script>
 </body>
 </html>

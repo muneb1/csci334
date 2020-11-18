@@ -17,7 +17,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Dashboard</title>
+	<title>Customer Request: Adtech IT Consultation</title>
 
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
@@ -179,8 +179,8 @@
 			       					$assignBtn = "";
 			       					if($req["status"] == 1) $status = "New";
 			       					else if($req["status"] == 2) $status = "Assigned";
-			       					else if($req["status"] == 3) $status = "On-Going";
-			       					else if($req["status"] == 4) $status = "Pending";
+			       					else if($req["status"] == 3) $status = "Active";
+			       					else if($req["status"] == 4) $status = "Inactive";
 			       					else if($req["status"] == 5) $status = "Completed";
 			       					else if($req["status"] == 6) $status = "Reviewed";
 

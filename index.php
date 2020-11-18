@@ -73,7 +73,6 @@
             <ul>
               <li><a type="button" data-toggle="modal" data-target="#newResquest">New Request</a></li>
               <li><a href="requestHistory.php">Request History</a></li>
-              <li><a href="#">Account</a></li>
               <li class="logout"><a href="assets/php/classes/run.php?a=logout">Logout</a></li>
             </ul>
           </li>';
@@ -603,7 +602,6 @@
 
     var uid = "";
     <?php if(isset($userObj)) echo 'uid = "'. $userObj->getData()["id"] . '"' ?>;
-    console.log(uid);
 
     if(uid != ""){
       //connect to socket
@@ -647,7 +645,6 @@
       });
 
       $("#login-btn").click(()=>{
-        console.log("asd");
         if($("#username").val() == "" || $("#password").val() == ""){
           createAlert("danger", "Username and password can't empty!");
         }else{
@@ -661,7 +658,6 @@
                 position: "client"
               },
               success: function(data) {
-                console.log(data);
                 if(data[0] == false){
                   createAlert("danger", "Wrong username or password!");
                 }else{

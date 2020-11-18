@@ -244,10 +244,10 @@ h1 {
   50%,
     75% {
     transform: scale(1.5); } }
-#addStaff .modal-body span {
+#addStaff .modal-body span, #addCus .modal-body span {
   line-height: 36px;
   font-size: 1rem; }
-#addStaff input {
+#addStaff input, #addCus input {
   padding: .375rem .75rem;
   margin-bottom: 10px; }
 

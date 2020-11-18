@@ -17,7 +17,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Staffs</title>
+	<title>Staffs List: Adtech IT Consultation</title>
 
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
@@ -60,7 +60,7 @@
             	<span class="col-2">Email:</span>
             	<input id="email" class="col-10 form-control" type="text" placeholder="Enter Email">
             	<span class="col-2">Password:</span>
-            	<input id="pass" class="col-10 form-control" type="text" placeholder="Enter Password">
+            	<input id="pass" class="col-10 form-control" type="password" placeholder="Enter Password">
             </div>
           </div>
           <div class="modal-footer">

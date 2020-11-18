@@ -19,7 +19,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Dashboard</title>
+	<title>Dashboard: Adtech IT Consultation</title>
 
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
@@ -480,8 +480,10 @@
 		    function drawColumnChart(){
 		    	var data = new google.visualization.DataTable();
 				data.addColumn('string', 'IT Technician');
-				data.addColumn('number', 'Overtime Working Hours');
-				data.addColumn({ role: "style" });
+				data.addColumn('number', 'Overtime Working Hours (Hr)');
+				data.addColumn({type:'string', role:'annotation'});
+				data.addColumn('number', 'Overtime Pay (RM)');
+				data.addColumn({type:'string', role:'annotation'});
 				var overtimeArray = [];
 				$.ajax({
 		              type: "POST",
@@ -489,27 +491,43 @@
 		              url: "../assets/php/classes/run.php?a=getStaffDetails", 
 		              success: function(result) {
 		                result.forEach((staff)=>{
-		                	overtimeArray.push({ '0': staff["fname"], '1': parseFloat((staff["overtime"]/3600).toFixed(2)) , '2': "#2487ce" });
+		                	overtimeArray.push({ '0': staff["fname"], '1': parseFloat((staff["overtime"]/3600).toFixed(2)) , '2': "#2487ce", '3': parseFloat((staff["overtime"]*0.00556).toFixed(2)) , '4': "#dc3545" });
 		                });
 		                var i = 0;
 						for(;overtimeArray[i];){
 							data.addRows([
-								[overtimeArray[i][0], overtimeArray[i][1], 'color: ' + overtimeArray[i][2]]
+								[overtimeArray[i][0], overtimeArray[i][1], overtimeArray[i][1]+"hr", overtimeArray[i][3], "RM" + overtimeArray[i][3]]
 							]);
 							i++;
 						}
 
 					    var view = new google.visualization.DataView(data);
-					    view.setColumns([0, 1,
-							{ calc: "stringify",
-							sourceColumn: 1,
-							type: "string",
-							role: "annotation" },
-						2]);
 
 					      var options = {
-					        bar: {groupWidth: "90%"},
-					        legend: { position: "none" },
+					        bar: {groupWidth: "80%"},
+					        legend: { position: "bottom" },
+					          width: 520,
+					          height: 220,
+					          series: {
+					            0: {targetAxisIndex: 0},
+					            1: {targetAxisIndex: 1}
+					          },					         
+					          vAxes: {
+					            // Adds titles to each axis.
+					            0: {title: 'Overtime Working Hours'},
+					            1: {title: 'Overtime Pay'}
+					          },
+					          annotations:{
+					          	highContrast: true,
+					          	alwaysOutside: true,
+					          	stem:{
+					          		length: 5
+					          	}
+					          },
+					          tooltip:{
+					          	trigger: 'none'
+					          }
+					          
 					      };
 
 					      var chart = new google.visualization.ColumnChart(document.getElementById("column-chart"));
@@ -536,16 +554,19 @@
 		              	console.log(result);
 
 		                result.forEach((request)=>{
-		                	star[request["review"]] += 1;
+		                	console.log(parseInt(request["review"]));
+		                	star[parseInt(request["review"]) - 1] += 1;
 		                });
+
+		                console.log(star);
 
 		                // Perfect, Good, Okay, Terrible
 						feedbackArray = [
-							{ '0': "1 Star", '1': star[1] },
-							{ '0': "2 Stars", '1': star[2] },
-							{ '0': "3 Stars", '1': star[3] },
-							{ '0': "4 Stars", '1': star[4] },
-							{ '0': "5 Stars", '1': star[5] }
+							{ '0': "1 Star", '1': star[0] },
+							{ '0': "2 Stars", '1': star[1] },
+							{ '0': "3 Stars", '1': star[2] },
+							{ '0': "4 Stars", '1': star[3] },
+							{ '0': "5 Stars", '1': star[4] }
 						];
 
 					   	var i = 0;
@@ -564,7 +585,9 @@
 									bold: true
 								}
 							},
-							sliceVisibilityThreshold:0
+							sliceVisibilityThreshold:0,
+							width: 500,
+							height: 300
 						}; 
 
 			            var chart = new google.visualization.PieChart(document.getElementById('pie-chart'));

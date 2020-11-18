@@ -71,7 +71,6 @@
             <ul>
               <li><a type="button" data-toggle="modal" data-target="#newResquest">New Request</a></li>
               <li><a href="requestHistory.php">Request History</a></li>
-              <li><a href="#">Account</a></li>
               <li class="logout"><a href="assets/php/classes/run.php?a=logout">Logout</a></li>
             </ul>
           </li>';
@@ -237,6 +236,9 @@
   <script src="assets/js/main.js"></script>
   <script type="text/javascript">
 
+    var uid = "";
+    <?php if(isset($userObj)) echo 'uid = "'. $userObj->getData()["id"] . '"' ?>;
+
     //connect to socket
     var sock = new WebSocket("ws://localhost:55000");
     var userList = [];
@@ -246,14 +248,14 @@
 
     sock.onmessage = function(event){
       const jsonData = JSON.parse(event.data);
-      if(jsonData.action == "notifyAll" || jsonData.action == "notify"){
-        console.log(jsonData);
-      }else if(jsonData.action == "list"){
-        const clients = (jsonData.msg).split(",");
-        clients.forEach((key)=>{
-          userList.push(key);
-        });
-      }
+        if(jsonData.action == "notifyAll" || jsonData.action == "notify"){
+          console.log(jsonData);
+        }else if(jsonData.action == "list"){
+          const clients = (jsonData.msg).split(",");
+          clients.forEach((key)=>{
+            userList.push(key);
+          });
+        }
       
     };
 
@@ -282,9 +284,9 @@
                 $status = "";
                 switch(res["status"]){
                   case "1": $status = "New"; break;
-                  case "2": $status = "Pending"; break;
+                  case "2": $status = "Assigned"; break;
                   case "3": $status = "On-Going"; break;
-                  case "4": $status = "Pending"; break;
+                  case "4": $status = "On-Going"; break;
                   case "5": $status = "Waiting for Review"; break;
                   case "6": $status = "Completed"; break;
                 }

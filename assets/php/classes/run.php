@@ -200,6 +200,27 @@
 			$addStaff->setParam($param);
 			echo $addStaff->execute();
 			break;
+		case "addCustomer":
+			$cid = $_POST["cid"];
+			$name = $_POST["name"];
+			$company = $_POST["company"];
+			$contact = $_POST["contact"];
+			$email = $_POST["email"];
+			$pass = $_POST["pass"];
+
+			$addCus= new addCustomer(ADTECH::getDB());
+			$param = array($cid,$name,$company,$contact,$email,$pass);
+			$addCus->setParam($param);
+			echo $addCus->execute();
+			break;
+		case "deleteCustomer":
+			$cid = $_POST["cid"];
+
+			$delCus = new deleteCustomer(ADTECH::getDB());
+			$param = array($cid);
+			$delCus->setParam($param);
+			echo $delCus->execute();
+			break;
 		case "submitReview":
 			$rid = $_POST["rid"];
 			$star = $_POST["star"];
@@ -209,7 +230,15 @@
 			$submitReview = new submitReview(ADTECH::getDB());
 			$param = array($star,$comment,$rTime,$rid);
 			$submitReview->setParam($param);
-			echo $submitReview->execute();
+			$result = $submitReview->execute();
+			echo $result;
+			if($result == true){
+				//create notification
+				$createNoti = new createNotification(ADTECH::getDB());
+				$nofi_param = array($rid."review",null,1,"New Review","Customer has left a review");
+				$createNoti->setParam($nofi_param);
+				$createNoti->execute();
+			}
 			break;
 		case "getStaffDetails":
 			$getDetails = new getStaffDetails(ADTECH::getDB());

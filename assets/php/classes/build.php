@@ -8,7 +8,8 @@
 	//initialize menu
 	$dashboard = new Main_Menu("Dashboard",ROOT_PATH."admin", [1,2]);
 	$customerMenu = new Main_Menu("Customer Requests",ROOT_PATH."admin/customerRequest.php", [2,3]);
-	$staffMenu = new Main_Menu("Staff", ROOT_PATH."admin/staff.php", [2]);
+	$customerDetails = new Main_Menu("Customers List",ROOT_PATH."admin/customers.php", [1,2]);
+	$staffMenu = new Main_Menu("Staffs List", ROOT_PATH."admin/staff.php", [2]);
 	$reportMenu = new Main_Menu("Reports", ROOT_PATH."admin/reports.php", [1]);
 	$overtimeMenu = new Main_Menu("Overtime Reports", ROOT_PATH."admin/overtime.php", [3]);
 
@@ -29,6 +30,7 @@
 
 	ADTECH::addMenu($dashboard);
 	ADTECH::addMenu($customerMenu);
+	ADTECH::addMenu($customerDetails);
 	ADTECH::addMenu($staffMenu);
 	ADTECH::addMenu($reportMenu);
 	ADTECH::addMenu($overtimeMenu);

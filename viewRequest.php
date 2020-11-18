@@ -71,7 +71,6 @@
             <ul>
               <li><a type="button" data-toggle="modal" data-target="#newResquest">New Request</a></li>
               <li><a href="requestHistory.php">Request History</a></li>
-              <li><a href="#">Account</a></li>
               <li class="logout"><a href="assets/php/classes/run.php?a=logout">Logout</a></li>
             </ul>
           </li>';
@@ -180,7 +179,7 @@
                   }else{
                     echo '<li class="checked">IT technician assigned<span class="time">'.$data->{"assignedDate"}.'</span><span><b>'.$data->{"assignedTo"}.'</b> will help you to solve the issue.</span></li>';
                   }
-                  if($data->{"status"} == 5) {
+                  if($data->{"status"} >= 5) {
                     echo '<li class="checked">Issue resolved<span class="time">'.$data->{"completedDate"}.'</span></li>';
                   }else{
                     echo '<li>Issue resolved<span class="time"></span></li>';

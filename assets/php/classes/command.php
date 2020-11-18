@@ -11,6 +11,7 @@
 	class Login implements Command{
 		private $sql;
 		private $db;
+		private $pos;
 
 		public function __construct($mysqli){
 			$this->sql = "";
@@ -18,6 +19,7 @@
 		}
 
 		public function setParam($param){
+			$this->pos = $param[2];
 			if($param[2] == "staff"){
 				$this->sql = 'SELECT * FROM `credential` JOIN `staff` on credential.uid = staff.sid WHERE (uid = "'.$param[0].'" OR u_email = "'.$param[0].'") AND u_pass = "'.$param[1].'" AND active = 1';
 			}else{
@@ -34,7 +36,13 @@
 					session_start();
 					$_SESSION["uid"] = $row["uid"];
 					$_SESSION["groupID"] = $row["user_group"];
-					return json_encode( (object) array("0"=> true, "1"=>$row["position"]));
+					if($this->pos == "staff"){
+						return json_encode( (object) array("0"=> true, "1"=>$row["position"]));
+					}else{
+						return json_encode( (object) array("0"=> true));
+
+					}
+					
 				}
 			}else{
 				return json_encode( (object) array("0"=> false));
@@ -530,6 +538,45 @@
 		}
 	}
 
+	class addCustomer implements Command{
+		private $sql;
+		private $db;
+		private $stmt;
+		private $sstmt;
+
+		public function __construct($mysqli){
+			$this->db = $mysqli;
+			$this->stmt = ($this->db)->prepare('INSERT INTO `credential`(`uid`, `u_email`, `u_pass`, `user_group`, `status`) VALUES (?,?,?,?,?)');
+			$this->sstmt = ($this->db)->prepare('INSERT INTO `client`(`cid`, `c_name`, `c_contact`, `c_company`, `active`) VALUES (?,?,?,?,?)');
+		}
+
+		public function setParam($param){
+			$status = 1;
+			$group = 1;
+			($this->stmt)->bind_param("sssii", $param[0], $param[4], $param[5], $group, $status);
+			($this->sstmt)->bind_param("ssssi", $param[0], $param[1], $param[3], $param[2], $status);
+		}
+
+		public function execute(){
+			($this->stmt)->execute();
+
+			if(($this->stmt)->affected_rows == 1){
+				($this->stmt)->close();
+				($this->sstmt)->execute();
+				if(($this->sstmt)->affected_rows == 1){
+					($this->sstmt)->close();
+					return json_encode( array("0"=> true));
+				}else{
+					($this->sstmt)->close();
+					return json_encode(array("0"=> false));
+				}	
+			}else{
+				($this->stmt)->close();
+				return json_encode(array("0"=> false));
+			}		
+		}
+	}
+
 	class getOverTime implements Command{
 		private $sql;
 		private $db;
@@ -760,6 +807,40 @@
 		}
 	}
 
+	class getCustomerDetails implements Command{
+		private $sql;
+		private $db;
+
+		public function __construct($mysqli){
+			$this->sql = "SELECT cid, c_name, c_contact, c_company, u_email, COALESCE(newReq,0) as new, COALESCE(goingReq,0) as ongoing, COALESCE(comReq,0) as completed FROM `client` join `credential` on client.cid = credential.uid left JOIN (SELECT created_by, count(created_by) as newReq FROM `request` WHERE status = 1 GROUP BY created_by) as newList on newList.created_by = client.cid left JOIN (SELECT created_by, count(created_by) as goingReq FROM `request` WHERE status >= 2 AND status <= 4 GROUP BY created_by) as goingList on goingList.created_by = client.cid left JOIN (SELECT created_by, count(created_by) as comReq FROM `request` WHERE status >= 5 GROUP BY created_by) as comList on comList.created_by = client.cid where active = 1";
+			$this->db = $mysqli;
+		}
+
+		public function setParam($param){}
+
+		public function execute(){
+			$overtimeCal = new getOverTime(ADTECH::getDB());
+
+			$result = ($this->db)->query($this->sql);
+			$result_arr = array();
+			if ($result->num_rows >= 1) {
+				while($row = $result->fetch_assoc()) {
+					array_push($result_arr, array(
+						"cid"=>$row["cid"],
+						"name"=>$row["c_name"],
+						"contact"=>$row["c_contact"],
+						"company"=>$row["c_company"],
+						"email"=>$row["u_email"],
+						"new"=>$row["new"],
+						"ongoing"=>$row["ongoing"],
+						"completed"=>$row["completed"]
+					));				
+				}
+			}
+			return $result_arr;
+		}
+	}
+
 	class submitReview implements Command{
 		private $sql;
 		private $db;
@@ -924,7 +1005,7 @@
 		}
 
 		private function getDays($second){
-			return floor($second/86400) . "day(s) ago";
+			return floor($second/86400) . " day(s) ago";
 		}
 	}
 
@@ -987,6 +1068,56 @@
 				return true;
 			}else{
 				($this->stmt)->close();
+				return false;
+			}
+		}
+	}
+
+	class deleteCustomer implements Command{
+		private $sql;
+		private $db;
+		private $cre_stmt;
+		private $cus_stmt;
+		private $req_stmt;
+
+
+		public function __construct($mysqli){
+			$this->db = $mysqli;
+			$this->cre_stmt = ($this->db)->prepare('UPDATE `credential` SET `status`=0 WHERE `uid` = ?');
+			$this->cus_stmt = ($this->db)->prepare('UPDATE `client` SET `active`= 0 WHERE `cid` = ?');
+			$this->req_stmt = ($this->db)->prepare('UPDATE `request` SET `status`=0 WHERE `created_by` = ?');
+		}
+
+		public function setParam($param){
+			($this->cre_stmt)->bind_param("s", $param[0]);
+			($this->cus_stmt)->bind_param("s", $param[0]);
+			($this->req_stmt)->bind_param("s", $param[0]);
+		}
+
+		public function execute(){
+			($this->req_stmt)->execute();
+
+			if(($this->req_stmt)->affected_rows >= 0){
+				($this->req_stmt)->close();
+			
+				($this->cus_stmt)->execute();
+
+				if(($this->cus_stmt)->affected_rows == 1){
+					($this->cus_stmt)->close();
+				
+					($this->cre_stmt)->execute();
+
+					if(($this->cre_stmt)->affected_rows == 1){
+						($this->cre_stmt)->close();
+					
+						return true;
+					}else{
+						return false;
+					}
+				}else{
+					return false;
+				}
+			}else{
 				return false;
 			}
 		}
